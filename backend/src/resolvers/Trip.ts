@@ -17,6 +17,7 @@ import { Between } from "typeorm";
 
 enum SortBy {
   DATE = "DATE",
+  START_TIME = "START_TIME",
   PRICE = "PRICE",
 }
 
@@ -216,6 +217,14 @@ export class TripResolver {
     @Arg("sortBy", () => [SortBy], { nullable: true }) sortBy: SortBy[]
   ): Promise<Trip[]> {
     try {
+      if (!startLocation) {
+        throw new Error("Departure location is required.");
+      }
+
+      if (!endLocation) {
+        throw new Error("Arrival location is required.");
+      }
+
       const whereClause: any = {
         startLocation,
         endLocation,
@@ -231,24 +240,37 @@ export class TripResolver {
         whereClause.date = Between(startDate, endDate);
       }
 
-      const options: any = { where: whereClause };
+      const options: any = {
+        where: whereClause,
+        relations: ["driver", "passengers"],
+      };
 
       if (sortBy && sortBy.length > 0) {
         options.order = {};
-        sortBy.forEach((sortCriterion) => {
-          if (sortCriterion === SortBy.DATE) {
-            options.order.date = "ASC";
-          } else if (sortCriterion === SortBy.PRICE) {
-            options.order.price = "ASC";
-          }
-        });
+        const primarySort = sortBy[0];
+        switch (primarySort) {
+          case SortBy.DATE:
+            options.order["date"] = "ASC";
+            break;
+          case SortBy.START_TIME:
+            options.order["startTime"] = {
+              direction: "ASC",
+              nulls: "NULLS FIRST",
+            };
+            break;
+          case SortBy.PRICE:
+            options.order["price"] = "ASC";
+            break;
+          default:
+            break;
+        }
       }
 
       const trips = await Trip.find(options);
       return trips;
     } catch (error) {
       console.error("Error occurred while fetching trips:", error);
-      throw new Error("Could not fetch trips. Please try again later.");
+      throw new Error(error.message);
     }
   }
 }
