@@ -47,6 +47,10 @@ export class Trip extends BaseEntity {
   @Column()
   endLocation: string;
 
+  @Field()
+  @Column()
+  startTime: string;
+
   @Field(() => [User])
   @ManyToMany(() => User, (user) => user.trips, {
     onDelete: "CASCADE",
