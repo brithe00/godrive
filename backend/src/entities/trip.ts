@@ -29,7 +29,7 @@ export class Trip extends BaseEntity {
 
   @Field()
   @Column({ default: "created" })
-  status: string;
+  status: string; // e.g., "created", "in-progress", "completed", "cancelled"
 
   @Field()
   @Column()
@@ -46,6 +46,30 @@ export class Trip extends BaseEntity {
   @Field()
   @Column()
   endLocation: string;
+
+  @Field()
+  @Column()
+  vehicleType: string; // e.g., "SUV"
+
+  @Field()
+  @Column()
+  vehicleModel: string; // e.g., "Toyota Highlander"
+
+  @Field()
+  @Column()
+  licensePlateNumber: string; // e.g., "ABC-1234"
+
+  @Field()
+  @Column({ type: "int" })
+  estimatedDuration: number; // e.g., 180 (minutes)
+
+  @Field()
+  @Column()
+  startTime: string;
+
+  @Field()
+  @Column()
+  endTime: string;
 
   @Field(() => [User])
   @ManyToMany(() => User, (user) => user.trips, {
