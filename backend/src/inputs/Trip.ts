@@ -22,4 +22,7 @@ export class TripInput {
 
   @Field()
   numberOfPassengers: number;
+
+  @Field()
+  startTime: string;
 }
