@@ -28,7 +28,7 @@ export class Trip extends BaseEntity {
   price: number;
 
   @Field()
-  @Column({ default: "created" })
+  @Column({ default: "new" })
   status: string; // e.g., "created", "in-progress", "completed", "cancelled"
 
   @Field()
