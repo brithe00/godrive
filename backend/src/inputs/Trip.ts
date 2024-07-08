@@ -12,17 +12,32 @@ export class TripInput {
   status: string;
 
   @Field()
-  startLocation: string;
+  numberOfPassengers: number;
 
   @Field()
-  stopLocations: string;
+  startLocation: string;
+
+  @Field({ nullable: true })
+  stopLocations?: string;
 
   @Field()
   endLocation: string;
 
   @Field()
-  numberOfPassengers: number;
+  vehicleType: string;
+
+  @Field({ nullable: true })
+  vehicleModel?: string;
+
+  @Field({ nullable: true })
+  licensePlateNumber?: string;
+
+  @Field()
+  estimatedDuration: number;
 
   @Field()
   startTime: string;
+
+  @Field()
+  endTime: string;
 }
