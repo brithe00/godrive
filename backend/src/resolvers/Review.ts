@@ -68,6 +68,7 @@ export class ReviewResolver {
   async createReview(
     @Arg("rating", () => Int) rating: number,
     @Arg("comment") comment: string,
+    @Arg("title") title: string,
     @Arg("targetId", () => String) targetId: string,
     @Ctx() ctx: UserContext
   ): Promise<Review> {
@@ -81,6 +82,7 @@ export class ReviewResolver {
     const review = new Review();
     review.rating = rating;
     review.comment = comment;
+    review.title = title;
     review.author = me;
     review.target = targetUser;
 
