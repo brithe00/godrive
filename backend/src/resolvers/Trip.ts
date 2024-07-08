@@ -39,7 +39,7 @@ export class TripResolver {
 
   @Mutation(() => Trip)
   async createTrip(
-    @Arg("data") data: TripInput,
+    @Arg("input") input: TripInput,
     @Ctx() ctx: UserContext
   ): Promise<Trip> {
     checkIfRegistered(ctx.user);
@@ -52,7 +52,7 @@ export class TripResolver {
       });
 
       const trip = await Trip.save({
-        ...data,
+        ...input,
         driver: user,
       });
 
