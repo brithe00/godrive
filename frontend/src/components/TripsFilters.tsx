@@ -49,7 +49,7 @@ export default function TripsFilters({
             </Box>
             <Box>
               <FormControl>
-                <RadioGroup defaultValue="female" name="radio-buttons-group">
+                <RadioGroup name="radio-buttons-group">
                   <FormControlLabel
                     control={
                       <Radio
