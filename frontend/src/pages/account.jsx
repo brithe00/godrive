@@ -169,10 +169,10 @@ export default function Account() {
         <Card>
           <CardContent>
             <Typography gutterBottom variant="h5" component="div">
-              Mon compte
+              My account
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Vos informations personnelles.
+              My personal information
             </Typography>
 
             <Box
@@ -185,12 +185,12 @@ export default function Account() {
                 <Grid item xs={12}>
                   {dataUpdateMe && dataUpdateMe.updateMe && (
                     <Alert severity="success">
-                      Informations personnelles modifiées !
+                      Personal information changed !
                     </Alert>
                   )}
 
                   {errorUpdateMe && (
-                    <Alert severity="error">Erreur : {error.message}</Alert>
+                    <Alert severity="error">Error : {error.message}</Alert>
                   )}
                 </Grid>
 
@@ -199,7 +199,7 @@ export default function Account() {
                     autoComplete="given-name"
                     fullWidth
                     id="firstname"
-                    label="Prénom"
+                    label="Firstname"
                     name="firstname"
                     value={firstname}
                     onChange={(e) => setFirstname(e.target.value)}
@@ -210,7 +210,7 @@ export default function Account() {
                     autoComplete="family-name"
                     fullWidth
                     id="lastname"
-                    label="Nom"
+                    label="Lastname"
                     name="lastname"
                     value={lastname}
                     onChange={(e) => setLastname(e.target.value)}
@@ -221,7 +221,7 @@ export default function Account() {
                   <TextField
                     fullWidth
                     id="phoneNumber"
-                    label="Téléphone"
+                    label="Phone number"
                     name="phoneNumber"
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
@@ -231,7 +231,7 @@ export default function Account() {
                 <Grid item xs={12} sm={6}>
                   <DatePicker
                     fullWidth
-                    label="Date de naissance"
+                    label="Birthdate"
                     format="DD/MM/YYYY"
                     sx={{ width: "100%" }}
                     value={birthdate}
@@ -257,7 +257,7 @@ export default function Account() {
                     variant="contained"
                     loading={loadingUpdateMe}
                   >
-                    Sauvegarder
+                    Save
                   </LoadingButton>
                 </Grid>
               </Grid>
@@ -291,18 +291,18 @@ export default function Account() {
               <Grid container spacing={2} mt={0.5}>
                 <Grid item xs={12}>
                   {data && data.changeMyPassword && (
-                    <Alert severity="success">Mot de passe modifié !</Alert>
+                    <Alert severity="success">Passowrd modified !</Alert>
                   )}
 
                   {error && (
-                    <Alert severity="error">Erreur : {error.message}</Alert>
+                    <Alert severity="error">Error : {error.message}</Alert>
                   )}
                 </Grid>
 
                 <Grid item xs={12}>
                   <FormControl variant="outlined" fullWidth>
                     <InputLabel htmlFor="outlined-adornment-password">
-                      Nouveau mot de passe
+                      New password
                     </InputLabel>
                     <OutlinedInput
                       id="outlined-adornment-password"
@@ -319,7 +319,7 @@ export default function Account() {
                           </IconButton>
                         </InputAdornment>
                       }
-                      label="Nouveau mot de passe"
+                      label="New password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                     />
@@ -329,7 +329,7 @@ export default function Account() {
                 <Grid item xs={12}>
                   <FormControl variant="outlined" fullWidth>
                     <InputLabel htmlFor="outlined-adornment-password-repeat">
-                      Répéter nouveau mot de passe
+                      Repeat new password
                     </InputLabel>
                     <OutlinedInput
                       id="outlined-adornment-password-repeat"
@@ -350,7 +350,7 @@ export default function Account() {
                           </IconButton>
                         </InputAdornment>
                       }
-                      label="Répéter nouveau mot de passe"
+                      label="Repeat new password"
                       value={repeatedPassword}
                       onChange={(e) => setRepeatedPassword(e.target.value)}
                     />
@@ -363,7 +363,7 @@ export default function Account() {
                     variant="contained"
                     loading={loading}
                   >
-                    Sauvegarder
+                    Save
                   </LoadingButton>
                 </Grid>
               </Grid>
@@ -381,7 +381,7 @@ export default function Account() {
                     color="error"
                     onClick={handleClickOpenModal}
                   >
-                    Supprimer mon compte
+                    Delete account
                   </Button>
                 </Grid>
               </Grid>
@@ -395,23 +395,23 @@ export default function Account() {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">Supprimer mon compte</DialogTitle>
+        <DialogTitle id="alert-dialog-title">Delete account</DialogTitle>
 
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Cette action est irréversible et supprimera définitivement votre
-            compte. Aucun retour en arrière n'est possible.
+            This action is irreversible and will permanently delete your your
+            account. There is no going back.
           </DialogContentText>
         </DialogContent>
 
         <DialogActions>
-          <Button onClick={handleCloseModal}>Annuler</Button>
+          <Button onClick={handleCloseModal}>Cancel</Button>
           <LoadingButton
             onClick={handleDeleteMyAccount}
             color="error"
             loading={loadingDeleteMe}
           >
-            Supprimer
+            Delete
           </LoadingButton>
         </DialogActions>
       </Dialog>
