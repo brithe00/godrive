@@ -26,8 +26,8 @@ export class Review extends BaseEntity {
   comment: string;
 
   @Field()
-  @Column({ nullable: true })
-  type: string;
+  @Column()
+  title: string;
 
   @ManyToOne(() => User, (user) => user.reviewsAsAuthor)
   @Field(() => User)
