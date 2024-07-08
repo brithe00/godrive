@@ -25,12 +25,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { clearCurrentUser } from "@/slices/userSlice";
 
 const pages = [
-  { label: "Trouver un trajet", url: "/" },
-  { label: "Proposer un trajet", url: "/trips/new" },
+  { label: "Search trips", url: "/" },
+  { label: "Propose trips", url: "/trips/new" },
 ];
 const settings = [
-  { label: "Mon compte", url: "/account" },
-  { label: "Mes trajets", url: "" },
+  { label: "Account", url: "account" },
+  { label: "My trips", url: "" },
 ];
 
 export default function Navbar() {
