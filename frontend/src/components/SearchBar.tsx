@@ -133,6 +133,21 @@ export default function SearchBar() {
           </Grid>
           <Grid item xs={0.5}></Grid>
 
+          {data && data.searchTrips.length === 0 && (
+            <Grid item xs={8}>
+              <Card
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: "100%",
+                }}
+              >
+                <CardContent>No results.</CardContent>
+              </Card>
+            </Grid>
+          )}
+
           {loading ? (
             <Grid item xs={8}>
               <Card
