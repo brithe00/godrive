@@ -155,6 +155,7 @@ export class UserResolver {
         where: {
           id,
         },
+        relations: ["reviewsAsTarget.target", "tripsAsDriver.driver"],
       });
 
       if (!user) throw new Error("User not found !");
