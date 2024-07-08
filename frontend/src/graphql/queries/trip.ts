@@ -16,11 +16,19 @@ export const SEARCH_TRIPS = gql`
       id
       startLocation
       endLocation
-      numberOfPassengers
-      status
       date
-      price
       startTime
+      estimatedDuration
+      endTime
+      price
+      status
+      numberOfPassengers
+      vehicleType
+      vehicleModel
+      licensePlateNumber
+      createdAt
+      updatedAt
+      stopLocations
       driver {
         id
         email
@@ -35,6 +43,41 @@ export const SEARCH_TRIPS = gql`
         lastname
         pictureUrl
       }
+    }
+  }
+`;
+
+export const GET_TRIP = gql`
+  query GetTrip($tripId: String!) {
+    trip(id: $tripId) {
+      id
+      startLocation
+      endLocation
+      stopLocations
+      startTime
+      estimatedDuration
+      endTime
+      date
+      vehicleType
+      vehicleModel
+      licensePlateNumber
+      numberOfPassengers
+      price
+      status
+      driver {
+        id
+        firstname
+        lastname
+        pictureUrl
+      }
+      passengers {
+        id
+        firstname
+        lastname
+        pictureUrl
+      }
+      createdAt
+      updatedAt
     }
   }
 `;
