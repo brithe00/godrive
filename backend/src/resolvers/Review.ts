@@ -30,6 +30,9 @@ export class ReviewResolver {
             },
           },
           relations: ["author", "target"],
+          order: {
+            createdAt: "DESC",
+          },
         });
 
         await redisClient.set(redisKey, JSON.stringify(reviews), { EX: 3600 });

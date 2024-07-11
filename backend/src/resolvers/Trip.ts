@@ -37,6 +37,29 @@ export class TripResolver {
     }
   }
 
+  @Query(() => [Trip])
+  async tripsForUser(
+    @Arg("userId", () => String) userId: string
+  ): Promise<Trip[]> {
+    try {
+      const trips = await Trip.find({
+        where: {
+          driver: {
+            id: userId,
+          },
+        },
+        order: {
+          createdAt: "DESC",
+        },
+      });
+
+      return trips;
+    } catch (error) {
+      console.error("Failed to fetch trips for user:", error);
+      throw error;
+    }
+  }
+
   @Mutation(() => Trip)
   async createTrip(
     @Arg("input") input: TripInput,
