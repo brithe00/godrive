@@ -81,3 +81,14 @@ export const GET_TRIP = gql`
     }
   }
 `;
+
+export const GET_TRIPS_FOR_USER = gql`
+  query TripsForUser($userId: String!) {
+    tripsForUser(userId: $userId) {
+      id
+      startLocation
+      endLocation
+      date
+    }
+  }
+`;

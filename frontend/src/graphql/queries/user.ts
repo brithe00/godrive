@@ -27,25 +27,6 @@ export const GET_USER = gql`
       lastname
       description
       birthdate
-      reviewsAsTarget {
-        id
-        rating
-        title
-        comment
-        createdAt
-        author {
-          id
-          firstname
-          lastname
-          pictureUrl
-        }
-      }
-      tripsAsDriver {
-        id
-        startLocation
-        endLocation
-        date
-      }
     }
   }
 `;
