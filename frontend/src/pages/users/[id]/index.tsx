@@ -11,41 +11,19 @@ import {
   Container,
   Card,
   Typography,
-  Button,
   CardContent,
-  CardActions,
   Grid,
-  TextField,
   Box,
   Divider,
-  IconButton,
-  OutlinedInput,
-  InputLabel,
-  InputAdornment,
-  FormControl,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Select,
-  MenuItem,
-  FormLabel,
-  RadioGroup,
-  Radio,
-  FormControlLabel,
   CircularProgress,
 } from "@mui/material";
 
 import StarIcon from "@mui/icons-material/Star";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
-import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 
 import dayjs from "dayjs";
 import { GET_REVIEWS_BY_ID } from "@/graphql/queries/review";
 import { GET_TRIPS_FOR_USER } from "@/graphql/queries/trip";
-
-import Link from "next/link";
 
 import { styled } from "@mui/system";
 import TripCardUser from "@/components/TripCardUser";

@@ -8,7 +8,6 @@ import {
   FormControlLabel,
   RadioGroup,
   Radio,
-  Link,
 } from "@mui/material";
 
 const SortBy = {

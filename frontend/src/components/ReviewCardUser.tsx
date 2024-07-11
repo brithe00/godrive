@@ -1,11 +1,4 @@
-import {
-  Card,
-  Typography,
-  CardContent,
-  CardActions,
-  Box,
-  Avatar,
-} from "@mui/material";
+import { Card, Typography, CardContent, Box, Avatar } from "@mui/material";
 
 import dayjs from "dayjs";
 
