@@ -67,6 +67,9 @@ export default function User() {
   const trips = dataTrips?.tripsForUser;
   const reviews = dataReviews?.reviewsForUser;
 
+  console.log(userInfos);
+  console.log(reviews);
+
   const calculateAge = (birthdate) => {
     const birthDate = dayjs(birthdate);
     const today = dayjs();

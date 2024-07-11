@@ -3,7 +3,6 @@ import { Review } from "../entities/review";
 import { UserContext } from "../types/User";
 import { User } from "../entities/user";
 import { checkIfRegistered } from "../utils/checker";
-import { redisClient } from "../index";
 
 @Resolver()
 export class ReviewResolver {
@@ -16,29 +15,20 @@ export class ReviewResolver {
   async reviewsForUser(
     @Arg("userId", () => String) userId: string
   ): Promise<Review[]> {
-    const redisKey = `user:${userId}:reviews`;
-
     try {
-      const cachedReviews = await redisClient.get(redisKey);
-      if (cachedReviews !== null) {
-        return JSON.parse(cachedReviews);
-      } else {
-        const reviews = await Review.find({
-          where: {
-            target: {
-              id: userId,
-            },
+      const reviews = await Review.find({
+        where: {
+          target: {
+            id: userId,
           },
-          relations: ["author", "target"],
-          order: {
-            createdAt: "DESC",
-          },
-        });
+        },
+        relations: ["author", "target"],
+        order: {
+          createdAt: "DESC",
+        },
+      });
 
-        await redisClient.set(redisKey, JSON.stringify(reviews), { EX: 3600 });
-
-        return reviews;
-      }
+      return reviews;
     } catch (error) {
       console.error("Erreur lors de la récupération des critiques :", error);
       throw new Error("Impossible de récupérer les critiques");
