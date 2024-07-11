@@ -21,6 +21,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Link,
 } from "@mui/material";
 
 import LoadingButton from "@mui/lab/LoadingButton";
@@ -168,12 +169,27 @@ export default function Account() {
       <Container component="main" maxWidth="md">
         <Card>
           <CardContent>
-            <Typography gutterBottom variant="h5" component="div">
-              My account
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              My personal information
-            </Typography>
+            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+              <Box>
+                <Typography gutterBottom variant="h5" component="div">
+                  My account
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  My personal information
+                </Typography>
+              </Box>
+              <Box>
+                <Link
+                  component="button"
+                  variant="body2"
+                  onClick={() => {
+                    router.push(`/users/${me?.id}`);
+                  }}
+                >
+                  My public profile
+                </Link>
+              </Box>
+            </Box>
 
             <Box
               component="form"
@@ -291,7 +307,7 @@ export default function Account() {
               <Grid container spacing={2} mt={0.5}>
                 <Grid item xs={12}>
                   {data && data.changeMyPassword && (
-                    <Alert severity="success">Passowrd modified !</Alert>
+                    <Alert severity="success">Password modified !</Alert>
                   )}
 
                   {error && (
