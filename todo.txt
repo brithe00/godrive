@@ -1,12 +1,3 @@
-image service
-image upload front
-
-multi env cicd
-
-typescript
-
-redis
-
 create review
 
 trip page
@@ -25,4 +16,12 @@ logo
 
 global css
 
+responsive
+
+typescript
+
+redis
+
 tests
+
+multi env cicd
