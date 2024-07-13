@@ -1,10 +1,10 @@
-create review
-
 trip page
+
+logique se mettre / se retirer dans un trip
 
 my trips
 
-logique se mettre / se retirer dans un trip
+my reviews
 
 trip full list
 
@@ -25,3 +25,11 @@ redis
 tests
 
 multi env cicd
+
+
+
+
+La prochaine fois, oral de 15 min + 10 min de questions, vous présenterez avec des slides :
+- Votre plan complet
+- Un ou des schémas d’architecture
+- Un point technique
