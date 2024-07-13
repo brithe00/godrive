@@ -72,6 +72,10 @@ export class ReviewResolver {
     const targetUser = await User.findOne({ where: { id: targetId } });
     if (!targetUser) throw new Error("User not found!");
 
+    if (me.id === targetId) {
+      throw new Error("Cannot review yourself !");
+    }
+
     const review = new Review();
     review.rating = rating;
     review.comment = comment;
