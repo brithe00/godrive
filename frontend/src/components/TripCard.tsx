@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
+import DirectionsBusIcon from "@mui/icons-material/DirectionsBus";
 import PersonIcon from "@mui/icons-material/Person";
 import { formatDuration } from "@/utils/utils";
 
@@ -132,7 +133,12 @@ export default function TripCard({ trip }) {
         >
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <DirectionsCarIcon sx={{ mr: 1 }} />
+              {trip.vehicleType === "bus" ? (
+                <DirectionsBusIcon sx={{ mr: 1 }} />
+              ) : (
+                <DirectionsCarIcon sx={{ mr: 1 }} />
+              )}
+
               <Avatar
                 alt={trip.driver.firstname}
                 src={trip.driver.pictureUrl}
@@ -147,7 +153,7 @@ export default function TripCard({ trip }) {
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <PersonIcon sx={{ mr: 1 }} />
               <Typography>
-                {trip.currentPassengers}/{trip.maxPassengers}{" "}
+                {trip.passengers.length} /{trip.maxPassengers}{" "}
                 {trip.numberOfPassengers} passengers
               </Typography>
             </Box>
