@@ -29,7 +29,6 @@ import LoadingButton from "@mui/lab/LoadingButton";
 
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import FileUploadIcon from "@mui/icons-material/FileUpload";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
