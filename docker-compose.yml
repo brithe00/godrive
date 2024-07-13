@@ -29,21 +29,25 @@ services:
     environment:
       - REDIS_HOSTS=redis
     ports:
-      - '8081:8081'
+      - "8081:8081"
+  images-upload:
+    build: ./images-upload
+    volumes:
+      - ./images-upload/uploads:/app/uploads
+    ports:
+      - "8000:8000"
   db:
     image: postgres
     restart: always
     environment:
       POSTGRES_PASSWORD: example
-
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -d postgres -U postgres']
+      test: ["CMD-SHELL", "pg_isready -d postgres -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 20
     volumes:
       - pgdata:/var/lib/postgresql/data
-
   adminer:
     image: adminer
     ports:
