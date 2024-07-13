@@ -22,12 +22,16 @@ import {
   DialogContentText,
   DialogTitle,
   Link,
+  Avatar,
 } from "@mui/material";
 
 import LoadingButton from "@mui/lab/LoadingButton";
 
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import FileUploadIcon from "@mui/icons-material/FileUpload";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 import { useMutation } from "@apollo/client";
@@ -50,6 +54,20 @@ import localizedFormat from "dayjs/plugin/localizedFormat";
 dayjs.extend(customParseFormat);
 dayjs.extend(localizedFormat);
 
+import { styled } from "@mui/material/styles";
+
+const VisuallyHiddenInput = styled("input")({
+  clip: "rect(0 0 0 0)",
+  clipPath: "inset(50%)",
+  height: 1,
+  overflow: "hidden",
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  whiteSpace: "nowrap",
+  width: 1,
+});
+
 export default function Account() {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -64,7 +82,8 @@ export default function Account() {
     me?.birthdate ? dayjs(me.birthdate) : ""
   );
 
-  const [pictureUrl, setPictureUrl] = useState("");
+  const [file, setFile] = useState(null);
+  const [pictureUrl, setPictureUrl] = useState(me?.pictureUrl || "");
 
   const [open, setOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -164,6 +183,18 @@ export default function Account() {
     event.preventDefault();
   };
 
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    setFile(file);
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPictureUrl(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <>
       <Container component="main" maxWidth="md">
@@ -210,6 +241,42 @@ export default function Account() {
                   )}
                 </Grid>
 
+                <Grid item xs={12} mb={2}>
+                  <Box>
+                    <LoadingButton
+                      loading={loadingUpdateMe}
+                      component="label"
+                      role={undefined}
+                      variant="outlined"
+                      tabIndex={-1}
+                      startIcon={<CloudUploadIcon />}
+                    >
+                      Upload file
+                      <VisuallyHiddenInput
+                        onChange={handleFileChange}
+                        type="file"
+                      />
+                    </LoadingButton>
+                  </Box>
+
+                  {file && (
+                    <Box mt={2}>
+                      <Typography variant="body2">
+                        Selected file: {file.name}
+                      </Typography>
+                      {pictureUrl && (
+                        <Box mt={2} display="flex" justifyContent="center">
+                          <Avatar
+                            src={pictureUrl}
+                            alt="Uploaded Picture"
+                            sx={{ width: 100, height: 100 }}
+                          />
+                        </Box>
+                      )}
+                    </Box>
+                  )}
+                </Grid>
+
                 <Grid item xs={12} sm={6}>
                   <TextField
                     autoComplete="given-name"
@@ -221,6 +288,7 @@ export default function Account() {
                     onChange={(e) => setFirstname(e.target.value)}
                   />
                 </Grid>
+
                 <Grid item xs={12} sm={6}>
                   <TextField
                     autoComplete="family-name"
