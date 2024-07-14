@@ -1,72 +1,128 @@
-import { gql, useQuery } from '@apollo/client';
-import Link from 'next/link';
-import { Card, CardContent, Typography, Button, Grid } from '@mui/material';
+import React, { useState } from "react";
+import { useQuery } from "@apollo/client";
+import { useSelector } from "react-redux";
+import {
+  Container,
+  Typography,
+  Tabs,
+  Tab,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemAvatar,
+  Avatar,
+  Chip,
+  CircularProgress,
+  Card,
+  CardContent,
+  Alert,
+  CardActionArea,
+} from "@mui/material";
+import DriveEtaIcon from "@mui/icons-material/DriveEta";
+import PersonIcon from "@mui/icons-material/Person";
+import Link from "next/link";
+import { GET_ALL_TRIPS_FOR_USER } from "@/graphql/queries/trip";
 
-const GET_TRIPS = gql`
-  query GetTrips {
-    trips {
-      id
-      date
-      price
-      status
-      startLocation
-      stopLocations
-      endLocation
-      driver
-      createdAt
-      updatedAt
-    }
-  }
-`;
+const TripCard = ({ trip, userId }) => (
+  <Card sx={{ width: "100%", mb: 2 }}>
+    <CardActionArea component={Link} href={`/trips/${trip.id}`}>
+      <CardContent sx={{ display: "flex", alignItems: "center" }}>
+        <ListItem key={trip.id} alignItems="flex-start">
+          <ListItemAvatar>
+            <Avatar
+              alt={`${trip.driver.firstname} ${trip.driver.lastname}`}
+              src={trip.driver.pictureUrl}
+            />
+          </ListItemAvatar>
+          <ListItemText
+            primary={`${trip.startLocation} to ${trip.endLocation}`}
+            secondary={
+              <>
+                <Typography
+                  component="span"
+                  variant="body2"
+                  color="textPrimary"
+                >
+                  {`${new Date(trip.date).toLocaleDateString()} | ${
+                    trip.startTime
+                  } - ${trip.endTime}`}
+                </Typography>
+                <br />
+                {`Driver: ${trip.driver.firstname} ${trip.driver.lastname}`}
+                <br />
+                {`Price: $${trip.price} | Duration: ${trip.estimatedDuration}min`}
+              </>
+            }
+          />
+          <Chip
+            icon={trip.driver.id === userId ? <DriveEtaIcon /> : <PersonIcon />}
+            label={trip.driver.id === userId ? "Driver" : "Passenger"}
+            color={trip.driver.id === userId ? "primary" : "secondary"}
+          />
+        </ListItem>
+      </CardContent>
+    </CardActionArea>
+  </Card>
+);
 
 const TripsPage = () => {
-  const { loading, error, data } = useQuery(GET_TRIPS);
+  const me = useSelector((state) => state.user.currentUser);
+  const [tabValue, setTabValue] = useState(0);
+  const userId = me?.id;
+  const { loading, error, data } = useQuery(GET_ALL_TRIPS_FOR_USER, {
+    variables: { userId },
+  });
 
-  if (loading) return <Typography>Loading...</Typography>;
-  if (error) return <Typography>Error :(</Typography>;
+  const handleTabChange = (event, newValue) => {
+    setTabValue(newValue);
+  };
+
+  const filterTrips = (type) => {
+    if (!data?.allTripsForUser) return [];
+    switch (type) {
+      case "all":
+        return data.allTripsForUser;
+      case "asDriver":
+        return data.allTripsForUser.filter((trip) => trip.driver.id === userId);
+      case "asPassenger":
+        return data.allTripsForUser.filter((trip) =>
+          trip.passengers.some((passenger) => passenger.id === userId)
+        );
+      default:
+        return [];
+    }
+  };
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-      <Typography variant='h1' gutterBottom>
-        Trips
-      </Typography>
-      <Grid container spacing={3}>
-        {data.trips.map((trip: any) => (
-          <Grid item xs={12} sm={6} md={4} key={trip.id}>
-            <Card sx={{ borderRadius: 2, backgroundColor: '#fff' }}>
-              <CardContent>
-                <Typography variant='h6'>
-                  Date: {new Date(trip.date).toLocaleDateString()}
-                </Typography>
-                <Typography>Price: {trip.price}</Typography>
-                <Typography>Status: {trip.status}</Typography>
-                <Typography>Start Location: {trip.startLocation}</Typography>
-                <Typography>Stop Locations: {trip.stopLocations}</Typography>
-                <Typography>End Location: {trip.endLocation}</Typography>
-                {/* <Link href={`/update-trip/${trip.id}`} passHref>
-                  <Button
-                    variant='contained'
-                    color='primary'
-                    style={{ marginTop: '10px' }}
-                  >
-                    Modifiez votre trajet
-                  </Button>
-                </Link>
-                <Link href={`/delete-trip/${trip.id}`} passHref>
-                  <Button
-                    variant='outlined'
-                    color='secondary'
-                    style={{ marginTop: '10px', marginLeft: '10px' }}
-                  >
-                    Supprimez votre trajet
-                  </Button>
-                </Link> */}
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
-    </div>
+    <Container component="main" maxWidth="md">
+      {error && (
+        <Alert style={{ marginBottom: "1rem" }} severity="error">
+          Error : {error.message}
+        </Alert>
+      )}
+
+      {loading && <CircularProgress />}
+
+      <Card>
+        <CardContent>
+          <Typography variant="h4" gutterBottom>
+            My Trips
+          </Typography>
+          <Tabs value={tabValue} onChange={handleTabChange} centered>
+            <Tab label="All Trips" />
+            <Tab label="As Driver" />
+            <Tab label="As Passenger" />
+          </Tabs>
+          <List>
+            {filterTrips(["all", "asDriver", "asPassenger"][tabValue])?.map(
+              (trip) => (
+                <TripCard key={trip.id} trip={trip} userId={userId} />
+              )
+            )}
+          </List>
+        </CardContent>
+      </Card>
+    </Container>
   );
 };
 
