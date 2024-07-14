@@ -4,7 +4,11 @@ export default function TripsList({ trips }) {
   return (
     <>
       {trips.map((trip) => (
-        <TripCard trip={trip} key={trip.id} />
+        <TripCard
+          trip={trip}
+          isFull={trip.passengers.length === trip.numberOfPassengers}
+          key={trip.id}
+        />
       ))}
     </>
   );

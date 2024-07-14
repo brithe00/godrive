@@ -12,11 +12,14 @@ import {
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import DirectionsBusIcon from "@mui/icons-material/DirectionsBus";
 import PersonIcon from "@mui/icons-material/Person";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import { formatDuration } from "@/utils/utils";
 
 import Link from "next/link";
 
 import { styled } from "@mui/material/styles";
+
+import dayjs from "dayjs";
 
 const StyledCard = styled(Card)(({ theme, isFull }) => ({
   marginBottom: "1rem",
@@ -43,9 +46,9 @@ const StyledCard = styled(Card)(({ theme, isFull }) => ({
   }),
 }));
 
-export default function TripCard({ trip }) {
+export default function TripCard({ trip, isFull }) {
   return (
-    <StyledCard isFull={trip.isFull} sx={{ marginBottom: "1rem" }}>
+    <StyledCard isFull={isFull} sx={{ marginBottom: "1rem" }}>
       <CardContent>
         <Box
           sx={{
@@ -121,6 +124,20 @@ export default function TripCard({ trip }) {
         </Box>
       </CardContent>
 
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          py: 1,
+        }}
+      >
+        <CalendarTodayIcon sx={{ fontSize: "small", mr: 0.5 }} />
+        <Typography variant="body2" color="text.secondary">
+          {dayjs(trip.date).format("DD MMM YYYY")}
+        </Typography>
+      </Box>
+
       <Divider />
 
       <CardContent>
@@ -160,7 +177,7 @@ export default function TripCard({ trip }) {
           </Box>
 
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            {trip.isFull ? (
+            {isFull ? (
               <Chip label="FULL" color="error" size="small" />
             ) : (
               <Link href={`/trips/${trip.id}`} passHref>

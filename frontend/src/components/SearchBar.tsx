@@ -18,9 +18,11 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import localizedFormat from "dayjs/plugin/localizedFormat";
+import utc from "dayjs/plugin/utc";
 
 dayjs.extend(customParseFormat);
 dayjs.extend(localizedFormat);
+dayjs.extend(utc);
 
 import { useLazyQuery } from "@apollo/client";
 import { SEARCH_TRIPS } from "@/graphql/queries/trip";
@@ -39,7 +41,7 @@ export default function SearchBar() {
       variables: {
         startLocation,
         endLocation,
-        date: date ? date.format("YYYY-MM-DDTHH:mm:ss[Z]") : null,
+        date: date ? dayjs(date).utc().format() : null,
         sortBy,
       },
     }
