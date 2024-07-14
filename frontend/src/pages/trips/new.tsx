@@ -21,11 +21,15 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+
 import { calculateEndTime } from "@/utils/utils";
 import { useMutation } from "@apollo/client";
 import { CREATE_TRIP } from "@/graphql/mutations/trip";
 
 import { useRouter } from "next/router";
+
+dayjs.extend(utc);
 
 export default function NewTrip() {
   const router = useRouter();
@@ -63,7 +67,7 @@ export default function NewTrip() {
           input: {
             startLocation,
             endLocation,
-            date: date.toISOString(),
+            date: date ? dayjs(date).utc().toISOString() : null,
             startTime,
             estimatedDuration,
             endTime,
