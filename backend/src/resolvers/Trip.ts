@@ -51,9 +51,50 @@ export class TripResolver {
         order: {
           createdAt: "DESC",
         },
+        relations: ["passengers", "driver"],
       });
 
       return trips;
+    } catch (error) {
+      console.error("Failed to fetch trips for user:", error);
+      throw error;
+    }
+  }
+
+  @Query(() => [Trip])
+  async allTripsForUser(
+    @Arg("userId", () => String) userId: string
+  ): Promise<Trip[]> {
+    try {
+      const tripsAsDriver = await Trip.find({
+        where: {
+          driver: {
+            id: userId,
+          },
+        },
+        order: {
+          createdAt: "DESC",
+        },
+        relations: ["passengers", "driver"],
+      });
+
+      const tripsAsPassenger = await Trip.find({
+        where: {
+          passengers: {
+            id: userId,
+          },
+        },
+        order: {
+          createdAt: "DESC",
+        },
+        relations: ["passengers", "driver"],
+      });
+
+      const allTrips = [...tripsAsDriver, ...tripsAsPassenger].sort(
+        (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+      );
+
+      return allTrips;
     } catch (error) {
       console.error("Failed to fetch trips for user:", error);
       throw error;
