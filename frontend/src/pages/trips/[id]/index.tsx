@@ -23,6 +23,8 @@ import {
   Card,
   CardContent,
   CardActionArea,
+  Alert,
+  CircularProgress,
 } from "@mui/material";
 
 import {
@@ -68,18 +70,15 @@ export default function Trip() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
+  const trip = data?.trip;
 
-  const { trip } = data;
-
-  const isUserOnTrip = trip.passengers.some(
+  const isUserOnTrip = trip?.passengers.some(
     (passenger) => passenger.id === me?.id
   );
   const isTripFull =
-    trip.passengers.length >= trip.numberOfPassengers ||
-    trip.status === "fulled";
-  const isUserDriver = trip.driver.id === me?.id;
+    trip?.passengers.length >= trip?.numberOfPassengers ||
+    trip?.status === "fulled";
+  const isUserDriver = trip?.driver.id === me?.id;
 
   const handleJoinLeaveTrip = async () => {
     setIsProcessing(true);
@@ -104,131 +103,143 @@ export default function Trip() {
 
   return (
     <Container maxWidth="md">
-      <Paper elevation={3} style={{ padding: "2rem", marginTop: "2rem" }}>
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <Typography variant="h4" gutterBottom>
-              Trip from {trip.startLocation} to {trip.endLocation}
-            </Typography>
-            <Typography variant="subtitle1" color="textSecondary">
-              {new Date(trip.date).toLocaleDateString()}
-            </Typography>
-          </Grid>
+      {error && (
+        <Alert style={{ marginBottom: "1rem" }} severity="error">
+          Error : {error.message}
+        </Alert>
+      )}
 
-          <Grid item xs={12} md={4}>
-            <Typography variant="h6" gutterBottom>
-              Driver
-            </Typography>
-            <UserCard user={trip.driver} role="Driver" />
-          </Grid>
-
-          <Grid item xs={12} md={8}>
-            <Typography variant="h6">Trip Details</Typography>
-            <List>
-              <ListItem>
-                <ListItemAvatar>
-                  <Avatar>
-                    <AccessTime />
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText
-                  primary="Departure Time"
-                  secondary={trip.startTime}
-                />
-              </ListItem>
-
-              <ListItem>
-                <ListItemAvatar>
-                  <Avatar>
-                    <Timer />
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText
-                  primary="Estimated Duration"
-                  secondary={`${trip.estimatedDuration} minutes`}
-                />
-              </ListItem>
-
-              <ListItem>
-                <ListItemAvatar>
-                  <Avatar>
-                    <Schedule />
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText primary="Arrival Time" secondary={trip.endTime} />
-              </ListItem>
-
-              <ListItem>
-                <ListItemAvatar>
-                  <Avatar>
-                    <DirectionsCar />
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText
-                  primary="Vehicle"
-                  secondary={`${trip.vehicleType}`}
-                />
-              </ListItem>
-
-              <ListItem>
-                <ListItemAvatar>
-                  <Avatar>
-                    <AttachMoney />
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText primary="Price" secondary={`${trip.price}€`} />
-              </ListItem>
-
-              <ListItem>
-                <ListItemAvatar>
-                  <Avatar>
-                    <Person />
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText
-                  primary="Available Seats"
-                  secondary={trip.numberOfPassengers}
-                />
-              </ListItem>
-            </List>
-          </Grid>
-
-          <Grid item xs={12}>
-            <Divider sx={{ my: 2 }} />
-            <Typography variant="h6" gutterBottom>
-              Passengers
-            </Typography>
-            <Grid container spacing={2}>
-              {trip.passengers.map((passenger) => (
-                <Grid item xs={12} sm={6} md={4} key={passenger.id}>
-                  <UserCard user={passenger} role="Passenger" />
-                </Grid>
-              ))}
-            </Grid>
-          </Grid>
-
-          {!isUserDriver && (
+      {loading && <CircularProgress />}
+      {trip && (
+        <Paper elevation={3} style={{ padding: "2rem", marginTop: "2rem" }}>
+          <Grid container spacing={3}>
             <Grid item xs={12}>
-              <Divider style={{ margin: "1rem 0" }} />
-              <Button
-                variant="contained"
-                color={isUserOnTrip ? "secondary" : "primary"}
-                onClick={handleJoinLeaveTrip}
-                disabled={isProcessing || (!isUserOnTrip && isTripFull)}
-                fullWidth
-              >
-                {isProcessing
-                  ? "Processing..."
-                  : isUserOnTrip
-                  ? "Leave Trip"
-                  : isTripFull
-                  ? "Trip Full"
-                  : "Join Trip"}
-              </Button>
+              <Typography variant="h4" gutterBottom>
+                Trip from {trip.startLocation} to {trip.endLocation}
+              </Typography>
+              <Typography variant="subtitle1" color="textSecondary">
+                {new Date(trip.date).toLocaleDateString()}
+              </Typography>
             </Grid>
-          )}
-        </Grid>
-      </Paper>
+
+            <Grid item xs={12} md={4}>
+              <Typography variant="h6" gutterBottom>
+                Driver
+              </Typography>
+              <UserCard user={trip.driver} role="Driver" />
+            </Grid>
+
+            <Grid item xs={12} md={8}>
+              <Typography variant="h6">Trip Details</Typography>
+              <List>
+                <ListItem>
+                  <ListItemAvatar>
+                    <Avatar>
+                      <AccessTime />
+                    </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary="Departure Time"
+                    secondary={trip.startTime}
+                  />
+                </ListItem>
+
+                <ListItem>
+                  <ListItemAvatar>
+                    <Avatar>
+                      <Timer />
+                    </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary="Estimated Duration"
+                    secondary={`${trip.estimatedDuration} minutes`}
+                  />
+                </ListItem>
+
+                <ListItem>
+                  <ListItemAvatar>
+                    <Avatar>
+                      <Schedule />
+                    </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary="Arrival Time"
+                    secondary={trip.endTime}
+                  />
+                </ListItem>
+
+                <ListItem>
+                  <ListItemAvatar>
+                    <Avatar>
+                      <DirectionsCar />
+                    </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary="Vehicle"
+                    secondary={`${trip.vehicleType}`}
+                  />
+                </ListItem>
+
+                <ListItem>
+                  <ListItemAvatar>
+                    <Avatar>
+                      <AttachMoney />
+                    </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText primary="Price" secondary={`${trip.price}€`} />
+                </ListItem>
+
+                <ListItem>
+                  <ListItemAvatar>
+                    <Avatar>
+                      <Person />
+                    </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary="Available Seats"
+                    secondary={trip.numberOfPassengers}
+                  />
+                </ListItem>
+              </List>
+            </Grid>
+
+            <Grid item xs={12}>
+              <Divider sx={{ my: 2 }} />
+              <Typography variant="h6" gutterBottom>
+                Passengers
+              </Typography>
+              <Grid container spacing={2}>
+                {trip.passengers.map((passenger) => (
+                  <Grid item xs={12} sm={6} md={4} key={passenger.id}>
+                    <UserCard user={passenger} role="Passenger" />
+                  </Grid>
+                ))}
+              </Grid>
+            </Grid>
+
+            {!isUserDriver && (
+              <Grid item xs={12}>
+                <Divider style={{ margin: "1rem 0" }} />
+                <Button
+                  variant="contained"
+                  color={isUserOnTrip ? "secondary" : "primary"}
+                  onClick={handleJoinLeaveTrip}
+                  disabled={isProcessing || (!isUserOnTrip && isTripFull)}
+                  fullWidth
+                >
+                  {isProcessing
+                    ? "Processing..."
+                    : isUserOnTrip
+                    ? "Leave Trip"
+                    : isTripFull
+                    ? "Trip Full"
+                    : "Join Trip"}
+                </Button>
+              </Grid>
+            )}
+          </Grid>
+        </Paper>
+      )}
 
       <Snackbar
         open={!!snackbarMessage}
