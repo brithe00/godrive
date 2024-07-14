@@ -30,7 +30,8 @@ const pages = [
 ];
 const settings = [
   { label: "Account", url: "account" },
-  { label: "My trips", url: "" },
+  { label: "My trips", url: "trips" },
+  { label: "My reviews", url: "reviews" },
 ];
 
 export default function Navbar() {
