@@ -1,12 +1,6 @@
-trip page
-
-logique se mettre / se retirer dans un trip
-
 my trips
 
 my reviews
-
-trip full list
 
 trip card finir
 
