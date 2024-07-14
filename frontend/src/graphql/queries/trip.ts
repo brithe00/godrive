@@ -92,3 +92,33 @@ export const GET_TRIPS_FOR_USER = gql`
     }
   }
 `;
+
+export const GET_ALL_TRIPS_FOR_USER = gql`
+  query GetAllTripsForUser($userId: String!) {
+    allTripsForUser(userId: $userId) {
+      id
+      driver {
+        id
+        firstname
+        lastname
+        pictureUrl
+      }
+      passengers {
+        id
+        firstname
+        lastname
+        pictureUrl
+      }
+      date
+      startLocation
+      endLocation
+      startTime
+      estimatedDuration
+      endTime
+      numberOfPassengers
+      createdAt
+      price
+      vehicleType
+    }
+  }
+`;
