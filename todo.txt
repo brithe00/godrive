@@ -1,5 +1,3 @@
-my trips
-
 my reviews
 
 trip card finir
