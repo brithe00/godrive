@@ -35,6 +35,30 @@ export class ReviewResolver {
     }
   }
 
+  @Query(() => [Review])
+  async reviewsAsAuthor(
+    @Arg("userId", () => String) authorId: string
+  ): Promise<Review[]> {
+    try {
+      const reviews = await Review.find({
+        where: {
+          author: {
+            id: authorId,
+          },
+        },
+        relations: ["author", "target"],
+        order: {
+          createdAt: "DESC",
+        },
+      });
+
+      return reviews;
+    } catch (error) {
+      console.error("Error fetching reviews by author:", error);
+      throw new Error("Unable to fetch reviews by author");
+    }
+  }
+
   @Mutation(() => Boolean)
   async deleteReview(
     @Arg("reviewId", () => String) reviewId: string,
@@ -42,7 +66,10 @@ export class ReviewResolver {
   ): Promise<Boolean> {
     try {
       checkIfRegistered(ctx.user);
-      const review = await Review.findOne({ where: { id: reviewId } });
+      const review = await Review.findOne({
+        where: { id: reviewId },
+        relations: ["author"],
+      });
       if (!review) throw new Error("Review not found!");
 
       if (review.author.id !== ctx.user.id) {
