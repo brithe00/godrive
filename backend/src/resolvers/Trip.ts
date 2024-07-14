@@ -255,10 +255,10 @@ export class TripResolver {
 
       if (date) {
         const startDate = new Date(date);
-        startDate.setHours(0, 0, 0, 0);
+        startDate.setUTCHours(0, 0, 0, 0);
 
         const endDate = new Date(startDate);
-        endDate.setDate(startDate.getDate() + 1);
+        endDate.setUTCDate(startDate.getUTCDate() + 1);
 
         whereClause.date = Between(startDate, endDate);
       }
@@ -297,5 +297,3 @@ export class TripResolver {
     }
   }
 }
-
-// remove passenger
