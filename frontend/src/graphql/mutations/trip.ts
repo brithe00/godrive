@@ -21,3 +21,35 @@ export const CREATE_TRIP = gql`
     }
   }
 `;
+
+export const ADD_PASSENGER = gql`
+  mutation AddPassenger($tripId: String!) {
+    addPassenger(tripId: $tripId) {
+      id
+      passengers {
+        id
+        firstname
+        lastname
+        pictureUrl
+      }
+      numberOfPassengers
+      status
+    }
+  }
+`;
+
+export const REMOVE_PASSENGER = gql`
+  mutation RemovePassenger($tripId: String!) {
+    removePassenger(tripId: $tripId) {
+      id
+      passengers {
+        id
+        firstname
+        lastname
+        pictureUrl
+      }
+      numberOfPassengers
+      status
+    }
+  }
+`;
