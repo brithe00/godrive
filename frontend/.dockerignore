@@ -1,0 +1,14 @@
+node_modules
+npm-debug.log
+yarn-error.log
+.git
+.gitignore
+.dockerignore
+Dockerfile*
+docker-compose*
+.env
+.env.*
+*.md
+.next    # for Next.js projects
+dist     # for compiled output
+coverage # for test coverage reports
