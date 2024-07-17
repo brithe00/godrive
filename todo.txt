@@ -2,8 +2,6 @@ trip card finir
 
 refetch user apres modif account + menu dropdown
 
-validations champs ?
-
 reload logo et card user review
 
 commenter une fois un user
@@ -23,11 +21,3 @@ redis
 tests
 
 multi env cicd
-
-
-
-
-La prochaine fois, oral de 15 min + 10 min de questions, vous présenterez avec des slides :
-- Votre plan complet
-- Un ou des schémas d’architecture
-- Un point technique

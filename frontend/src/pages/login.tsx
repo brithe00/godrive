@@ -25,6 +25,15 @@ import { ME } from "@/graphql/queries/user";
 import { setCurrentUser } from "@/slices/userSlice";
 import { LOGIN_MUTATION } from "@/graphql/mutations/user";
 
+import { z } from "zod";
+
+export const loginSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(1, "Password is required"),
+});
+
+export type LoginFormData = z.infer<typeof loginSchema>;
+
 export default function LoginPage() {
   const dispatch = useDispatch();
   const client = useApolloClient();
@@ -34,12 +43,27 @@ export default function LoginPage() {
   const [login, { data, loading, error }] = useMutation(LOGIN_MUTATION);
   const router = useRouter();
 
+  const [formErrors, setFormErrors] = useState<
+    Partial<Record<keyof LoginFormData, string>>
+  >({});
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const formData: LoginFormData = {
+      email,
+      password,
+    };
+
     try {
-      e.preventDefault();
+      loginSchema.parse(formData);
+
+      setFormErrors({});
+
       const { data } = await login({
-        variables: { input: { email, password } },
+        variables: { input: { ...formData } },
       });
+
       if (data && data.login && data.login.token) {
         localStorage.setItem("token", data.login.token);
 
@@ -52,8 +76,18 @@ export default function LoginPage() {
 
         router.push("/");
       }
-    } catch (e) {
-      console.error("Registration error:", e);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const errors: Partial<Record<keyof LoginFormData, string>> = {};
+        error.errors.forEach((err) => {
+          if (err.path) {
+            errors[err.path[0] as keyof LoginFormData] = err.message;
+          }
+        });
+        setFormErrors(errors);
+      } else {
+        console.error("Create trip error:", error);
+      }
     }
   };
 
@@ -98,6 +132,8 @@ export default function LoginPage() {
                 name="email"
                 autoComplete="email"
                 onChange={(e) => setEmail(e.target.value)}
+                error={!!formErrors.email}
+                helperText={formErrors.email}
               />
             </Grid>
             <Grid item xs={12}>
@@ -110,6 +146,8 @@ export default function LoginPage() {
                 id="password"
                 autoComplete="new-password"
                 onChange={(e) => setPassword(e.target.value)}
+                error={!!formErrors.password}
+                helperText={formErrors.password}
               />
             </Grid>
           </Grid>

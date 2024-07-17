@@ -14,6 +14,7 @@ import {
   RadioGroup,
   Radio,
   FormControlLabel,
+  FormHelperText,
 } from "@mui/material";
 
 import LoadingButton from "@mui/lab/LoadingButton";
@@ -29,16 +30,20 @@ import { CREATE_TRIP } from "@/graphql/mutations/trip";
 
 import { useRouter } from "next/router";
 
+import { z } from "zod";
+
 dayjs.extend(utc);
 
 interface CustomDatePickerProps {
   value: Dayjs | null;
   onChange: (newValue: Dayjs | null) => void;
+  error?: string;
 }
 
 const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
   value,
   onChange,
+  error,
 }) => (
   <DatePicker
     label="Date"
@@ -50,10 +55,44 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
         required: true,
         fullWidth: true,
         sx: { width: "100%" },
+        error: !!error,
+        helperText: error,
       },
     }}
   />
 );
+
+export const tripSchema = z.object({
+  startLocation: z.string().min(1, "Start location is required"),
+  endLocation: z.string().min(1, "End location is required"),
+  date: z.date({
+    required_error: "Date is required",
+    invalid_type_error: "That's not a date!",
+  }),
+  price: z
+    .number()
+    .min(0, "Price must be a positive number")
+    .refine((val) => !isNaN(val), "Price must be a valid number"),
+  numberOfPassengers: z
+    .number()
+    .int()
+    .min(1, "At least one passenger is required"),
+  vehicleType: z.enum(["car", "bus"], {
+    required_error: "Vehicle type is required",
+  }),
+  vehicleModel: z.string().optional(),
+  licensePlateNumber: z.string().optional(),
+  startTime: z
+    .string()
+    .regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Invalid time format"),
+  estimatedDuration: z
+    .number()
+    .int()
+    .min(1, "Duration must be at least 1 minute"),
+  endTime: z.string().optional(),
+});
+
+export type TripFormData = z.infer<typeof tripSchema>;
 
 export default function NewTrip() {
   const router = useRouter();
@@ -70,6 +109,10 @@ export default function NewTrip() {
   const [endTime, setEndTime] = useState("");
   const [estimatedDuration, setEstimatedDuration] = useState(0);
 
+  const [formErrors, setFormErrors] = useState<
+    Partial<Record<keyof TripFormData, string>>
+  >({});
+
   const [createTrip, { data, loading, error }] = useMutation(CREATE_TRIP);
 
   useEffect(() => {
@@ -83,24 +126,33 @@ export default function NewTrip() {
   }, [startTime, estimatedDuration]);
 
   const handleCreateTrip = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const formData: TripFormData = {
+      startLocation,
+      endLocation,
+      date: date ? date.toDate() : new Date(),
+      price,
+      numberOfPassengers,
+      vehicleType: vehicleType as "car" | "bus",
+      vehicleModel,
+      licensePlateNumber,
+      startTime,
+      estimatedDuration,
+      endTime,
+    };
+
     try {
-      e.preventDefault();
+      tripSchema.parse(formData);
+
+      setFormErrors({});
 
       const { data } = await createTrip({
         variables: {
           input: {
-            startLocation,
-            endLocation,
-            date: date ? dayjs(date).utc().toISOString() : null,
-            startTime,
-            estimatedDuration,
-            endTime,
-            price,
+            ...formData,
+            date: dayjs(formData.date).utc().toISOString(),
             status: "new",
-            numberOfPassengers,
-            vehicleType,
-            vehicleModel,
-            licensePlateNumber,
             stopLocations: "",
           },
         },
@@ -110,7 +162,17 @@ export default function NewTrip() {
         router.push(`/trips/${data.createTrip.id}`);
       }, 1000);
     } catch (error) {
-      console.error("Create trip error:", e);
+      if (error instanceof z.ZodError) {
+        const errors: Partial<Record<keyof TripFormData, string>> = {};
+        error.errors.forEach((err) => {
+          if (err.path) {
+            errors[err.path[0] as keyof TripFormData] = err.message;
+          }
+        });
+        setFormErrors(errors);
+      } else {
+        console.error("Create trip error:", error);
+      }
     }
   };
 
@@ -162,6 +224,8 @@ export default function NewTrip() {
                     name="departure"
                     value={startLocation}
                     onChange={(e) => setStartLocation(e.target.value)}
+                    error={!!formErrors.startLocation}
+                    helperText={formErrors.startLocation}
                   />
                 </Grid>
 
@@ -174,6 +238,8 @@ export default function NewTrip() {
                     name="destination"
                     value={endLocation}
                     onChange={(e) => setEndLocation(e.target.value)}
+                    error={!!formErrors.endLocation}
+                    helperText={formErrors.endLocation}
                   />
                 </Grid>
 
@@ -193,6 +259,7 @@ export default function NewTrip() {
                   <CustomDatePicker
                     value={date}
                     onChange={(newValue) => setDate(newValue)}
+                    error={formErrors.date}
                   />
                 </Grid>
 
@@ -217,7 +284,8 @@ export default function NewTrip() {
                     name="startTime"
                     value={startTime}
                     onChange={(e) => setStartTime(e.target.value)}
-                    helperText={`format : "08:00"`}
+                    error={!!formErrors.startTime}
+                    helperText={formErrors.startTime || `format : "08:00"`}
                   />
                 </Grid>
 
@@ -234,7 +302,11 @@ export default function NewTrip() {
                         e.target.value === "" ? 0 : parseInt(e.target.value, 10)
                       )
                     }
-                    helperText={`in minutes : 120 (for 2 hours)`}
+                    error={!!formErrors.estimatedDuration}
+                    helperText={
+                      formErrors.estimatedDuration ||
+                      `in minutes : 120 (for 2 hours)`
+                    }
                     type="number"
                   />
                 </Grid>
@@ -278,6 +350,8 @@ export default function NewTrip() {
                       )
                     }
                     type="number"
+                    error={!!formErrors.price}
+                    helperText={formErrors.price}
                   />
                 </Grid>
 
@@ -294,7 +368,7 @@ export default function NewTrip() {
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
-                  <FormControl>
+                  <FormControl error={!!formErrors.vehicleType}>
                     <RadioGroup
                       row
                       name="vehicleType"
@@ -310,6 +384,9 @@ export default function NewTrip() {
                         label="Bus"
                       />
                     </RadioGroup>
+                    {formErrors.vehicleType && (
+                      <FormHelperText>{formErrors.vehicleType}</FormHelperText>
+                    )}
                   </FormControl>
                 </Grid>
 
@@ -327,6 +404,8 @@ export default function NewTrip() {
                       )
                     }
                     type="number"
+                    error={!!formErrors.numberOfPassengers}
+                    helperText={formErrors.numberOfPassengers}
                   />
                 </Grid>
 

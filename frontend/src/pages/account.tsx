@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 
+import { z } from "zod";
+
 import {
   Alert,
   Container,
@@ -46,7 +48,7 @@ import {
 
 import { updateCurrentUser } from "@/slices/userSlice";
 
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import localizedFormat from "dayjs/plugin/localizedFormat";
 
@@ -54,6 +56,7 @@ dayjs.extend(customParseFormat);
 dayjs.extend(localizedFormat);
 
 import { styled } from "@mui/material/styles";
+import { RootState } from "@/types/types";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -67,21 +70,32 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
+const updateMeSchema = z.object({
+  firstname: z.string().min(1, "Firstname is required"),
+  lastname: z.string().min(1, "Lastname is required"),
+  phoneNumber: z.string().optional(),
+  description: z.string().optional(),
+  birthdate: z.date().optional(),
+  pictureUrl: z.string().optional(),
+});
+
+type UpdateMeFormData = z.infer<typeof updateMeSchema>;
+
 export default function Account() {
   const router = useRouter();
   const dispatch = useDispatch();
 
-  const me = useSelector((state) => state.user.currentUser);
+  const me = useSelector((state: RootState) => state.user.currentUser);
 
   const [firstname, setFirstname] = useState(me?.firstname || "");
   const [lastname, setLastname] = useState(me?.lastname || "");
   const [phoneNumber, setPhoneNumber] = useState(me?.phoneNumber || "");
   const [description, setDescription] = useState(me?.description || "");
-  const [birthdate, setBirthdate] = useState(
-    me?.birthdate ? dayjs(me.birthdate) : ""
+  const [birthdate, setBirthdate] = useState<Dayjs | null>(
+    me?.birthdate ? dayjs(me.birthdate) : null
   );
 
-  const [file, setFile] = useState(null);
+  const [file, setFile] = useState<File | null>(null);
   const [pictureUrl, setPictureUrl] = useState(me?.pictureUrl || "");
 
   const [open, setOpen] = useState(false);
@@ -90,6 +104,10 @@ export default function Account() {
 
   const [password, setPassword] = useState("");
   const [repeatedPassword, setRepeatedPassword] = useState("");
+
+  const [updateMeErrors, setUpdateMeErrors] = useState<
+    Partial<UpdateMeFormData>
+  >({});
 
   const [
     updateMe,
@@ -126,18 +144,27 @@ export default function Account() {
     setOpen(false);
   };
 
-  const handleSubmitUpdateMe = async (e) => {
+  const handleSubmitUpdateMe = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const formData: UpdateMeFormData = {
+      firstname,
+      lastname,
+      phoneNumber,
+      description,
+      birthdate: birthdate ? birthdate.toDate() : undefined,
+      pictureUrl,
+    };
+
     try {
-      e.preventDefault();
+      updateMeSchema.parse(formData);
+      setUpdateMeErrors({});
+
       const { data } = await updateMe({
         variables: {
           input: {
-            firstname,
-            lastname,
-            phoneNumber,
-            description,
-            birthdate: birthdate.toISOString(),
-            pictureUrl,
+            ...formData,
+            birthdate: formData.birthdate?.toISOString(),
           },
         },
       });
@@ -146,11 +173,17 @@ export default function Account() {
         dispatch(updateCurrentUser(data.updateMe));
       }
     } catch (e) {
-      console.error("Update me error:", e);
+      if (e instanceof z.ZodError) {
+        setUpdateMeErrors(e.flatten().fieldErrors);
+      } else {
+        console.error("Update me error:", e);
+      }
     }
   };
 
-  const handleSubmitNewPassword = async (e) => {
+  const handleSubmitNewPassword = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
     try {
       e.preventDefault();
       await changeMyPassword({
@@ -175,20 +208,24 @@ export default function Account() {
   const handleClickShowPasswordRepeat = () =>
     setShowPasswordRepeat((show) => !show);
 
-  const handleMouseDownPassword = (event) => {
+  const handleMouseDownPassword = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
     event.preventDefault();
   };
-  const handleMouseDownPasswordRepeat = (event) => {
+  const handleMouseDownPasswordRepeat = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
     event.preventDefault();
   };
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0] || null;
     setFile(file);
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setPictureUrl(reader.result);
+        setPictureUrl(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
@@ -236,7 +273,9 @@ export default function Account() {
                   )}
 
                   {errorUpdateMe && (
-                    <Alert severity="error">Error : {error.message}</Alert>
+                    <Alert severity="error">
+                      Error : {errorUpdateMe.message}
+                    </Alert>
                   )}
                 </Grid>
 
@@ -285,6 +324,8 @@ export default function Account() {
                     name="firstname"
                     value={firstname}
                     onChange={(e) => setFirstname(e.target.value)}
+                    error={!!updateMeErrors.firstname}
+                    helperText={updateMeErrors.firstname}
                   />
                 </Grid>
 
@@ -297,6 +338,8 @@ export default function Account() {
                     name="lastname"
                     value={lastname}
                     onChange={(e) => setLastname(e.target.value)}
+                    error={!!updateMeErrors.lastname}
+                    helperText={updateMeErrors.lastname}
                   />
                 </Grid>
 
@@ -313,7 +356,11 @@ export default function Account() {
 
                 <Grid item xs={12} sm={6}>
                   <DatePicker
-                    fullWidth
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,
+                      },
+                    }}
                     label="Birthdate"
                     format="DD/MM/YYYY"
                     sx={{ width: "100%" }}

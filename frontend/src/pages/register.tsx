@@ -25,6 +25,15 @@ import { ME } from "@/graphql/queries/user";
 import { setCurrentUser } from "@/slices/userSlice";
 import { REGISTER_MUTATION } from "@/graphql/mutations/user";
 
+import { z } from "zod";
+
+export const registerSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters long"),
+});
+
+export type RegisterFormData = z.infer<typeof registerSchema>;
+
 export default function RegisterPage() {
   const dispatch = useDispatch();
   const client = useApolloClient();
@@ -33,12 +42,27 @@ export default function RegisterPage() {
   const [register, { data, loading, error }] = useMutation(REGISTER_MUTATION);
   const router = useRouter();
 
+  const [formErrors, setFormErrors] = useState<
+    Partial<Record<keyof RegisterFormData, string>>
+  >({});
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const formData: RegisterFormData = {
+      email,
+      password,
+    };
+
     try {
-      e.preventDefault();
+      registerSchema.parse(formData);
+
+      setFormErrors({});
+
       const { data } = await register({
-        variables: { input: { email, password } },
+        variables: { input: { ...formData } },
       });
+
       if (data && data.register && data.register.token) {
         localStorage.setItem("token", data.register.token);
 
@@ -51,8 +75,18 @@ export default function RegisterPage() {
 
         router.push("/");
       }
-    } catch (e) {
-      console.error("Registration error:", e);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const errors: Partial<Record<keyof RegisterFormData, string>> = {};
+        error.errors.forEach((err) => {
+          if (err.path) {
+            errors[err.path[0] as keyof RegisterFormData] = err.message;
+          }
+        });
+        setFormErrors(errors);
+      } else {
+        console.error("Create trip error:", error);
+      }
     }
   };
 
@@ -99,6 +133,8 @@ export default function RegisterPage() {
                 name="email"
                 autoComplete="email"
                 onChange={(e) => setEmail(e.target.value)}
+                error={!!formErrors.email}
+                helperText={formErrors.email}
               />
             </Grid>
             <Grid item xs={12}>
@@ -111,6 +147,8 @@ export default function RegisterPage() {
                 id="password"
                 autoComplete="new-password"
                 onChange={(e) => setPassword(e.target.value)}
+                error={!!formErrors.password}
+                helperText={formErrors.password}
               />
             </Grid>
           </Grid>
