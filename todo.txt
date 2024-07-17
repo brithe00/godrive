@@ -1,5 +1,13 @@
 trip card finir
 
+refetch user apres modif account + menu dropdown
+
+validations champs ?
+
+reload logo et card user review
+
+commenter une fois un user
+
 menu css
 
 logo
