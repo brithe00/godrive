@@ -35,7 +35,7 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
-import { useMutation } from "@apollo/client";
+import { useApolloClient, useMutation } from "@apollo/client";
 import { useRouter } from "next/router";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -57,6 +57,7 @@ dayjs.extend(localizedFormat);
 
 import { styled } from "@mui/material/styles";
 import { RootState } from "@/types/types";
+import { ME } from "@/graphql/queries/user";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -84,6 +85,7 @@ type UpdateMeFormData = z.infer<typeof updateMeSchema>;
 export default function Account() {
   const router = useRouter();
   const dispatch = useDispatch();
+  const client = useApolloClient();
 
   const me = useSelector((state: RootState) => state.user.currentUser);
 
@@ -171,6 +173,11 @@ export default function Account() {
 
       if (data && data.updateMe) {
         dispatch(updateCurrentUser(data.updateMe));
+
+        await client.query({
+          query: ME,
+          fetchPolicy: "network-only",
+        });
       }
     } catch (e) {
       if (e instanceof z.ZodError) {
