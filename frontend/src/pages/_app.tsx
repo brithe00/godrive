@@ -18,8 +18,7 @@ import Layout from "@/components/Layout";
 import { persistor, store } from "@/store/store";
 
 const httpLink = createHttpLink({
-  //uri: "http://localhost:4000",
-  uri: "/graphql", // test for deployed prod
+  uri: process.env.NEXT_PUBLIC_GRAPHQL_URL || "/graphql",
 });
 
 const authLink = setContext((_, { headers }) => {
