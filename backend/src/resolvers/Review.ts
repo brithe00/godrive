@@ -103,6 +103,17 @@ export class ReviewResolver {
       throw new Error("Cannot review yourself !");
     }
 
+    const existingReview = await Review.findOne({
+      where: {
+        author: { id: me.id },
+        target: { id: targetId },
+      },
+    });
+
+    if (existingReview) {
+      throw new Error("You have already reviewed this user!");
+    }
+
     const review = new Review();
     review.rating = rating;
     review.comment = comment;
