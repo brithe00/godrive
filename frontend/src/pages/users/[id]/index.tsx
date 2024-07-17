@@ -36,6 +36,9 @@ import { styled } from "@mui/system";
 import TripCardUser from "@/components/TripCardUser";
 import ReviewCardUser from "@/components/ReviewCardUser";
 import { CREATE_REVIEW } from "@/graphql/mutations/review";
+import { Review, Trip } from "@/types/types";
+
+import Link from "next/link";
 
 const StyledLink = styled("a")({
   textDecoration: "none",
@@ -48,7 +51,7 @@ export default function User() {
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [reviewTitle, setReviewTitle] = useState("");
   const [reviewComment, setReviewComment] = useState("");
-  const [reviewRating, setReviewRating] = useState(0);
+  const [reviewRating, setReviewRating] = useState<number | null>(0);
 
   const { loading, data, error, refetch } = useQuery(GET_USER, {
     variables: { getUserByIdId: params?.id },
@@ -87,33 +90,26 @@ export default function User() {
   const trips = dataTrips?.tripsForUser;
   const reviews = dataReviews?.reviewsForUser;
 
-  const calculateAge = (birthdate) => {
+  const calculateAge = (birthdate: string): number => {
     const birthDate = dayjs(birthdate);
     const today = dayjs();
     return today.diff(birthDate, "year");
   };
 
-  const calculateAverageRating = (reviews) => {
-    const totalReviews = reviews?.length;
-
-    if (totalReviews === 0) {
-      return 0;
-    }
-
-    const sumOfRatings = reviews?.reduce(
-      (acc, review) => acc + review?.rating,
+  const calculateAverageRating = (reviews: Review[] | undefined) => {
+    if (!reviews || reviews.length === 0) return "0.0";
+    const sumOfRatings = reviews.reduce(
+      (acc, review) => acc + review.rating,
       0
     );
-    const averageRating = sumOfRatings / totalReviews;
-
-    return averageRating.toFixed(1);
+    return (sumOfRatings / reviews.length).toFixed(1);
   };
 
   const handleCreateReviewClick = () => {
     setShowReviewForm(!showReviewForm);
   };
 
-  const handleReviewSubmit = async (e) => {
+  const handleReviewSubmit = async (e: React.FormEvent) => {
     try {
       e.preventDefault();
 
@@ -235,11 +231,17 @@ export default function User() {
                       </Box>
 
                       <Grid container spacing={2} mt={0.5}>
-                        {trips?.map((trip) => (
+                        {trips?.map((trip: Trip) => (
                           <Grid item xs={3} key={trip.id}>
-                            <StyledLink href={`/trips/${trip.id}`} passHref>
-                              <TripCardUser trip={trip} />
-                            </StyledLink>
+                            <Link
+                              href={`/trips/${trip.id}`}
+                              passHref
+                              legacyBehavior
+                            >
+                              <StyledLink>
+                                <TripCardUser trip={trip} />
+                              </StyledLink>
+                            </Link>
                           </Grid>
                         ))}
                       </Grid>
@@ -276,14 +278,17 @@ export default function User() {
                       </Box>
 
                       <Grid container spacing={2} mt={0.5}>
-                        {reviews?.map((review) => (
+                        {reviews?.map((review: Review) => (
                           <Grid item xs={12} key={review.id}>
-                            <StyledLink
-                              href={`/users/${review.author.id}`}
+                            <Link
+                              href={`/users/${review?.author?.id}`}
                               passHref
+                              legacyBehavior
                             >
-                              <ReviewCardUser review={review} />
-                            </StyledLink>
+                              <StyledLink>
+                                <ReviewCardUser review={review} />
+                              </StyledLink>
+                            </Link>
                           </Grid>
                         ))}
                       </Grid>

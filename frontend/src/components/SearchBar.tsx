@@ -15,7 +15,7 @@ import LoadingButton from "@mui/lab/LoadingButton";
 
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import localizedFormat from "dayjs/plugin/localizedFormat";
 import utc from "dayjs/plugin/utc";
@@ -29,30 +29,39 @@ import { SEARCH_TRIPS } from "@/graphql/queries/trip";
 import TripsList from "./TripsList";
 import TripsFilters from "./TripsFilters";
 
-export default function SearchBar() {
-  const [startLocation, setStartLocation] = useState("");
-  const [endLocation, setEndLocation] = useState("");
-  const [date, setDate] = useState(null);
-  const [sortBy, setSortBy] = useState([]);
+import { SortBy, Trip } from "@/types/types";
 
-  const [search, { loading, data, error, refetch }] = useLazyQuery(
-    SEARCH_TRIPS,
-    {
+interface SearchTripsData {
+  searchTrips: Trip[];
+}
+
+export default function SearchBar() {
+  const [startLocation, setStartLocation] = useState<string>("");
+  const [endLocation, setEndLocation] = useState<string>("");
+  const [date, setDate] = useState<Dayjs | null>(null);
+  const [sortBy, setSortBy] = useState<SortBy[]>([]);
+
+  const [search, { loading, data, error, refetch }] =
+    useLazyQuery<SearchTripsData>(SEARCH_TRIPS, {
       variables: {
         startLocation,
         endLocation,
         date: date ? dayjs(date).utc().format() : null,
         sortBy,
       },
-    }
-  );
+    });
 
-  const handleSortByChange = (value) => {
+  const handleSortByChange = (value: SortBy) => {
     setSortBy([value]);
   };
 
   const handleResetFilters = () => {
     setSortBy([]);
+  };
+
+  const handleSearch = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    search();
   };
 
   return (
@@ -80,7 +89,9 @@ export default function SearchBar() {
                     label="Departure"
                     name="startLocation"
                     value={startLocation}
-                    onChange={(e) => setStartLocation(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setStartLocation(e.target.value)
+                    }
                     required
                   />
                 </Grid>
@@ -91,17 +102,25 @@ export default function SearchBar() {
                     label="Destination"
                     name="endLocation"
                     value={endLocation}
-                    onChange={(e) => setEndLocation(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setEndLocation(e.target.value)
+                    }
                     required
                   />
                 </Grid>
                 <Grid item xs={3.5}>
                   <DatePicker
-                    fullWidth
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,
+                      },
+                    }} // for ts
                     label="Date"
                     format="DD/MM/YYYY"
                     sx={{ width: "100%" }}
-                    onChange={(newValue) => setDate(dayjs(newValue))}
+                    onChange={(newValue: Dayjs | null) =>
+                      setDate(dayjs(newValue))
+                    }
                   />
                 </Grid>
 
@@ -110,7 +129,7 @@ export default function SearchBar() {
                     fullWidth
                     variant="contained"
                     loading={loading}
-                    onClick={search}
+                    onClick={handleSearch}
                   >
                     Search
                   </LoadingButton>

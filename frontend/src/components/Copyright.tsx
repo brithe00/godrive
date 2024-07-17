@@ -1,7 +1,11 @@
 import Typography from "@mui/material/Typography";
 import Link from "next/link";
 
-export default function Copyright(props) {
+interface CopyrightProps {
+  [key: string]: any;
+}
+
+export default function Copyright(props: CopyrightProps) {
   return (
     <Typography
       variant="body2"

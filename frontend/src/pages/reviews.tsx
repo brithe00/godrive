@@ -22,15 +22,26 @@ import { useSelector } from "react-redux";
 import { GET_REVIEWS_AS_AUTHOR } from "@/graphql/queries/review";
 import { DELETE_REVIEW } from "@/graphql/mutations/review";
 import { useRouter } from "next/navigation";
+import { Review, RootState } from "@/types/types";
 
-const ReviewCard = ({ review, handleDelete, router }) => (
+interface ReviewCardProps {
+  review: Review;
+  handleDelete: (reviewId: string) => void;
+  router: ReturnType<typeof useRouter>;
+}
+
+const ReviewCard: React.FC<ReviewCardProps> = ({
+  review,
+  handleDelete,
+  router,
+}) => (
   <Card sx={{ width: "100%", mb: 2 }}>
     <CardContent sx={{ display: "flex", alignItems: "center" }}>
       <ListItem>
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <Avatar
-            alt={`${review.target.firstname} ${review.target.lastname}`}
-            src={review.target.pictureUrl}
+            alt={`${review?.target?.firstname} ${review?.target?.lastname}`}
+            src={review?.target?.pictureUrl}
           />
           <ListItemText
             sx={{ marginLeft: "1rem" }}
@@ -42,7 +53,7 @@ const ReviewCard = ({ review, handleDelete, router }) => (
                   variant="body2"
                   color="textPrimary"
                 >
-                  {`${review.target.firstname} ${review.target.lastname}`}
+                  {`${review?.target?.firstname} ${review?.target?.lastname}`}
                 </Typography>
                 {` — ${review.comment}`}
                 <br />
@@ -62,7 +73,7 @@ const ReviewCard = ({ review, handleDelete, router }) => (
             <IconButton
               edge="end"
               aria-label="visit"
-              onClick={() => router.push(`/users/${review.target.id}`)}
+              onClick={() => router.push(`/users/${review?.target?.id}`)}
             >
               <VisibilityIcon />
             </IconButton>
@@ -84,9 +95,11 @@ const ReviewCard = ({ review, handleDelete, router }) => (
 
 const ReviewsPage = () => {
   const router = useRouter();
-  const me = useSelector((state) => state.user.currentUser);
+  const me = useSelector((state: RootState) => state.user.currentUser);
   const userId = me?.id;
-  const { loading, error, data, refetch } = useQuery(GET_REVIEWS_AS_AUTHOR, {
+  const { loading, error, data, refetch } = useQuery<{
+    reviewsAsAuthor: Review[];
+  }>(GET_REVIEWS_AS_AUTHOR, {
     variables: { userId },
   });
 
@@ -99,7 +112,7 @@ const ReviewsPage = () => {
     },
   ] = useMutation(DELETE_REVIEW);
 
-  const handleDelete = async (reviewId) => {
+  const handleDelete = async (reviewId: string) => {
     try {
       await deleteReview({
         variables: { reviewId },

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useParams } from "next/navigation";
 import { useSelector } from "react-redux";
 import { useQuery, useMutation } from "@apollo/client";
@@ -32,35 +32,46 @@ import {
   DirectionsCar,
   AttachMoney,
   Person,
-  DirectionsBus,
   Schedule,
   Timer,
 } from "@mui/icons-material";
+import type { RootState, Trip, User } from "@/types/types";
 
-const UserCard = ({ user, role }) => (
-  <Card sx={{ maxWidth: 345, width: "100%", mb: 2 }}>
-    <CardActionArea component={Link} href={`/users/${user.id}`}>
-      <CardContent sx={{ display: "flex", alignItems: "center" }}>
-        <Avatar src={user.pictureUrl} sx={{ width: 60, height: 60, mr: 2 }} />
-        <div>
-          <Typography variant="h6" component="div">
-            {user.firstname} {user.lastname}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {role}
-          </Typography>
-        </div>
-      </CardContent>
-    </CardActionArea>
-  </Card>
-);
+interface UserCardProps {
+  user: User | undefined;
+  role: string;
+}
+
+const UserCard: React.FC<UserCardProps> = ({ user, role }) => {
+  if (!user) {
+    return null;
+  }
+
+  return (
+    <Card sx={{ maxWidth: 345, width: "100%", mb: 2 }}>
+      <CardActionArea component={Link} href={`/users/${user.id}`}>
+        <CardContent sx={{ display: "flex", alignItems: "center" }}>
+          <Avatar src={user.pictureUrl} sx={{ width: 60, height: 60, mr: 2 }} />
+          <div>
+            <Typography variant="h6" component="div">
+              {user.firstname} {user.lastname}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {role}
+            </Typography>
+          </div>
+        </CardContent>
+      </CardActionArea>
+    </Card>
+  );
+};
 
 export default function Trip() {
   const params = useParams();
 
-  const me = useSelector((state) => state.user.currentUser);
+  const me = useSelector((state: RootState) => state.user.currentUser);
 
-  const { loading, data, error, refetch } = useQuery(GET_TRIP, {
+  const { loading, data, error, refetch } = useQuery<{ trip: Trip }>(GET_TRIP, {
     variables: { tripId: params?.id },
   });
 
@@ -68,17 +79,26 @@ export default function Trip() {
   const [removePassenger] = useMutation(REMOVE_PASSENGER);
 
   const [isProcessing, setIsProcessing] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarMessage, setSnackbarMessage] = useState<string>("");
 
   const trip = data?.trip;
 
-  const isUserOnTrip = trip?.passengers.some(
+  const isUserOnTrip = trip?.passengers?.some(
     (passenger) => passenger.id === me?.id
   );
-  const isTripFull =
-    trip?.passengers.length >= trip?.numberOfPassengers ||
-    trip?.status === "fulled";
-  const isUserDriver = trip?.driver.id === me?.id;
+
+  const isTripFull = useMemo(() => {
+    if (!trip) return false;
+
+    const passengersCount = trip.passengers?.length ?? 0;
+    const maxPassengers = trip.numberOfPassengers ?? Infinity;
+
+    return passengersCount >= maxPassengers || trip.status === "fulled";
+  }, [trip]);
+
+  const isUserDriver = useMemo(() => {
+    return trip?.driver?.id === me?.id;
+  }, [trip, me]);
 
   const handleJoinLeaveTrip = async () => {
     setIsProcessing(true);
@@ -96,7 +116,11 @@ export default function Trip() {
       }
       await refetch();
     } catch (error) {
-      setSnackbarMessage(`Error: ${error.message}`);
+      if (error instanceof Error) {
+        setSnackbarMessage(`Error: ${error.message}`);
+      } else {
+        setSnackbarMessage("An unknown error occurred");
+      }
     }
     setIsProcessing(false);
   };
@@ -209,7 +233,7 @@ export default function Trip() {
                 Passengers
               </Typography>
               <Grid container spacing={2}>
-                {trip.passengers.map((passenger) => (
+                {trip?.passengers?.map((passenger) => (
                   <Grid item xs={12} sm={6} md={4} key={passenger.id}>
                     <UserCard user={passenger} role="Passenger" />
                   </Grid>
@@ -217,7 +241,7 @@ export default function Trip() {
               </Grid>
             </Grid>
 
-            {!isUserDriver && (
+            {trip && !isUserDriver && (
               <Grid item xs={12}>
                 <Divider style={{ margin: "1rem 0" }} />
                 <Button

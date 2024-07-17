@@ -23,12 +23,23 @@ import { useRouter } from "next/navigation";
 
 import { useDispatch, useSelector } from "react-redux";
 import { clearCurrentUser } from "@/slices/userSlice";
+import { RootState } from "@/types/types";
 
-const pages = [
+interface Page {
+  label: string;
+  url: string;
+}
+
+interface Setting {
+  label: string;
+  url: string;
+}
+
+const pages: Page[] = [
   { label: "Search trips", url: "/" },
   { label: "Propose trips", url: "/trips/new" },
 ];
-const settings = [
+const settings: Setting[] = [
   { label: "Account", url: "account" },
   { label: "My trips", url: "trips" },
   { label: "My reviews", url: "reviews" },
@@ -38,7 +49,7 @@ export default function Navbar() {
   const router = useRouter();
 
   const dispatch = useDispatch();
-  const me = useSelector((state) => state.user.currentUser);
+  const me = useSelector((state: RootState) => state.user.currentUser);
 
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null

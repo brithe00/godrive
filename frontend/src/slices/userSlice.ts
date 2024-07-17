@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export const userSlice = createSlice({
   name: "user",
@@ -13,10 +13,9 @@ export const userSlice = createSlice({
       state.currentUser = null;
     },
     updateCurrentUser: (state, action) => {
-      state.currentUser = {
-        ...state.currentUser,
-        ...action.payload,
-      };
+      if (state.currentUser) {
+        Object.assign(state.currentUser, action.payload);
+      }
     },
   },
 });

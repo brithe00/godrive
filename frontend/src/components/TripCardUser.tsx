@@ -3,8 +3,13 @@ import { Card, Typography, CardContent, CardActions, Box } from "@mui/material";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 
 import dayjs from "dayjs";
+import { Trip } from "@/types/types";
 
-export default function TripCardUser({ trip }) {
+interface TripCardUserProps {
+  trip: Trip;
+}
+
+export default function TripCardUser({ trip }: TripCardUserProps) {
   return (
     <Card>
       <CardContent sx={{ paddingBottom: "2px" }}>

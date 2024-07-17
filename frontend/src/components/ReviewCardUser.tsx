@@ -4,7 +4,13 @@ import dayjs from "dayjs";
 
 import StarIcon from "@mui/icons-material/Star";
 
-export default function ReviewCardUser({ review }) {
+import { Review } from "@/types/types";
+
+interface ReviewCardUserProps {
+  review: Review;
+}
+
+export default function ReviewCardUser({ review }: ReviewCardUserProps) {
   return (
     <Card>
       <CardContent>
@@ -17,11 +23,11 @@ export default function ReviewCardUser({ review }) {
         >
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Avatar
-              alt={review.author.firstname}
-              src={review.author.pictureUrl}
+              alt={review.author?.firstname}
+              src={review.author?.pictureUrl}
             />
             <Typography ml={1} variant="h5">
-              {review.author.firstname}
+              {review.author?.firstname}
             </Typography>
           </Box>
 

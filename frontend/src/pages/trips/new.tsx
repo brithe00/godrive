@@ -20,7 +20,7 @@ import LoadingButton from "@mui/lab/LoadingButton";
 
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import utc from "dayjs/plugin/utc";
 
 import { calculateEndTime } from "@/utils/utils";
@@ -31,12 +31,36 @@ import { useRouter } from "next/router";
 
 dayjs.extend(utc);
 
+interface CustomDatePickerProps {
+  value: Dayjs | null;
+  onChange: (newValue: Dayjs | null) => void;
+}
+
+const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
+  value,
+  onChange,
+}) => (
+  <DatePicker
+    label="Date"
+    value={value}
+    onChange={onChange}
+    format="DD/MM/YYYY"
+    slotProps={{
+      textField: {
+        required: true,
+        fullWidth: true,
+        sx: { width: "100%" },
+      },
+    }}
+  />
+);
+
 export default function NewTrip() {
   const router = useRouter();
 
   const [startLocation, setStartLocation] = useState("");
   const [endLocation, setEndLocation] = useState("");
-  const [date, setDate] = useState(null);
+  const [date, setDate] = useState<Dayjs | null>(null);
   const [price, setPrice] = useState(0);
   const [numberOfPassengers, setNumberOfPassengers] = useState(0);
   const [vehicleType, setVehicleType] = useState("");
@@ -58,7 +82,7 @@ export default function NewTrip() {
     }
   }, [startTime, estimatedDuration]);
 
-  const handleCreateTrip = async (e) => {
+  const handleCreateTrip = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
       e.preventDefault();
 
@@ -166,14 +190,9 @@ export default function NewTrip() {
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
-                  <DatePicker
-                    required
-                    fullWidth
-                    label="Date"
-                    format="DD/MM/YYYY"
-                    sx={{ width: "100%" }}
+                  <CustomDatePicker
                     value={date}
-                    onChange={(newValue) => setDate(dayjs(newValue))}
+                    onChange={(newValue) => setDate(newValue)}
                   />
                 </Grid>
 

@@ -1,3 +1,4 @@
+import { SortBy } from "@/types/types";
 import {
   Card,
   Typography,
@@ -10,19 +11,19 @@ import {
   Radio,
 } from "@mui/material";
 
-const SortBy = {
-  DATE: "DATE",
-  START_TIME: "START_TIME",
-  PRICE: "PRICE",
-};
+interface TripsFiltersProps {
+  sortBy: SortBy[];
+  onSortByChange: (value: SortBy) => void;
+  onResetFilters: () => void;
+}
 
 export default function TripsFilters({
   sortBy,
   onSortByChange,
   onResetFilters,
-}) {
-  const handleSortByChange = (event) => {
-    const { value } = event.target;
+}: TripsFiltersProps) {
+  const handleSortByChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value as SortBy;
     onSortByChange(value);
   };
 

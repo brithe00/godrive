@@ -21,7 +21,14 @@ import { styled } from "@mui/material/styles";
 
 import dayjs from "dayjs";
 
-const StyledCard = styled(Card)(({ theme, isFull }) => ({
+import { Trip } from "@/types/types";
+
+interface TripCardProps {
+  trip: Trip;
+  isFull: boolean;
+}
+
+const StyledCard = styled(Card)<{ isFull: boolean }>(({ theme, isFull }) => ({
   marginBottom: "1rem",
   transition: "all 0.3s ease",
   ...(isFull && {
@@ -46,7 +53,7 @@ const StyledCard = styled(Card)(({ theme, isFull }) => ({
   }),
 }));
 
-export default function TripCard({ trip, isFull }) {
+export default function TripCard({ trip, isFull }: TripCardProps) {
   return (
     <StyledCard isFull={isFull} sx={{ marginBottom: "1rem" }}>
       <CardContent>
@@ -157,21 +164,20 @@ export default function TripCard({ trip, isFull }) {
               )}
 
               <Avatar
-                alt={trip.driver.firstname}
-                src={trip.driver.pictureUrl}
+                alt={trip.driver?.firstname}
+                src={trip.driver?.pictureUrl}
               />
               <Typography
                 sx={{ fontWeight: "bold", color: "text.secondary", ml: 1 }}
               >
-                {trip.driver.firstname}
+                {trip.driver?.firstname}
               </Typography>
             </Box>
 
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <PersonIcon sx={{ mr: 1 }} />
               <Typography>
-                {trip.passengers.length} /{trip.maxPassengers}{" "}
-                {trip.numberOfPassengers} passengers
+                {trip.passengers?.length} / {trip.numberOfPassengers} passengers
               </Typography>
             </Box>
           </Box>

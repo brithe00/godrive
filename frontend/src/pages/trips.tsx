@@ -22,16 +22,22 @@ import DriveEtaIcon from "@mui/icons-material/DriveEta";
 import PersonIcon from "@mui/icons-material/Person";
 import Link from "next/link";
 import { GET_ALL_TRIPS_FOR_USER } from "@/graphql/queries/trip";
+import { RootState, Trip } from "@/types/types";
 
-const TripCard = ({ trip, userId }) => (
+interface TripCardProps {
+  trip: Trip;
+  userId: string | undefined;
+}
+
+const TripCard: React.FC<TripCardProps> = ({ trip, userId }) => (
   <Card sx={{ width: "100%", mb: 2 }}>
     <CardActionArea component={Link} href={`/trips/${trip.id}`}>
       <CardContent sx={{ display: "flex", alignItems: "center" }}>
         <ListItem key={trip.id} alignItems="flex-start">
           <ListItemAvatar>
             <Avatar
-              alt={`${trip.driver.firstname} ${trip.driver.lastname}`}
-              src={trip.driver.pictureUrl}
+              alt={`${trip?.driver?.firstname} ${trip?.driver?.lastname}`}
+              src={trip?.driver?.pictureUrl}
             />
           </ListItemAvatar>
           <ListItemText
@@ -48,16 +54,18 @@ const TripCard = ({ trip, userId }) => (
                   } - ${trip.endTime}`}
                 </Typography>
                 <br />
-                {`Driver: ${trip.driver.firstname} ${trip.driver.lastname}`}
+                {`Driver: ${trip?.driver?.firstname} ${trip?.driver?.lastname}`}
                 <br />
                 {`Price: $${trip.price} | Duration: ${trip.estimatedDuration}min`}
               </>
             }
           />
           <Chip
-            icon={trip.driver.id === userId ? <DriveEtaIcon /> : <PersonIcon />}
-            label={trip.driver.id === userId ? "Driver" : "Passenger"}
-            color={trip.driver.id === userId ? "primary" : "secondary"}
+            icon={
+              trip?.driver?.id === userId ? <DriveEtaIcon /> : <PersonIcon />
+            }
+            label={trip?.driver?.id === userId ? "Driver" : "Passenger"}
+            color={trip?.driver?.id === userId ? "primary" : "secondary"}
           />
         </ListItem>
       </CardContent>
@@ -66,27 +74,29 @@ const TripCard = ({ trip, userId }) => (
 );
 
 const TripsPage = () => {
-  const me = useSelector((state) => state.user.currentUser);
+  const me = useSelector((state: RootState) => state.user.currentUser);
   const [tabValue, setTabValue] = useState(0);
   const userId = me?.id;
   const { loading, error, data } = useQuery(GET_ALL_TRIPS_FOR_USER, {
     variables: { userId },
   });
 
-  const handleTabChange = (event, newValue) => {
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
 
-  const filterTrips = (type) => {
+  const filterTrips = (type: "all" | "asDriver" | "asPassenger"): Trip[] => {
     if (!data?.allTripsForUser) return [];
     switch (type) {
       case "all":
         return data.allTripsForUser;
       case "asDriver":
-        return data.allTripsForUser.filter((trip) => trip.driver.id === userId);
+        return data.allTripsForUser.filter(
+          (trip: Trip) => trip?.driver?.id === userId
+        );
       case "asPassenger":
-        return data.allTripsForUser.filter((trip) =>
-          trip.passengers.some((passenger) => passenger.id === userId)
+        return data.allTripsForUser.filter((trip: Trip) =>
+          trip?.passengers?.some((passenger) => passenger.id === userId)
         );
       default:
         return [];
@@ -114,11 +124,14 @@ const TripsPage = () => {
             <Tab label="As Passenger" />
           </Tabs>
           <List>
-            {filterTrips(["all", "asDriver", "asPassenger"][tabValue])?.map(
-              (trip) => (
-                <TripCard key={trip.id} trip={trip} userId={userId} />
-              )
-            )}
+            {filterTrips(
+              ["all", "asDriver", "asPassenger"][tabValue] as
+                | "all"
+                | "asDriver"
+                | "asPassenger"
+            ).map((trip) => (
+              <TripCard key={trip.id} trip={trip} userId={userId} />
+            ))}
           </List>
         </CardContent>
       </Card>

@@ -33,7 +33,7 @@ export default function RegisterPage() {
   const [register, { data, loading, error }] = useMutation(REGISTER_MUTATION);
   const router = useRouter();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
       e.preventDefault();
       const { data } = await register({
@@ -48,7 +48,7 @@ export default function RegisterPage() {
         });
 
         dispatch(setCurrentUser(userData.me));
-        
+
         router.push("/");
       }
     } catch (e) {
