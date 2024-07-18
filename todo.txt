@@ -1,16 +1,6 @@
 trip card finir
 
-refetch user apres modif account + menu dropdown
-
-reload logo et card user review
-
-commenter une fois un user
-
-menu css
-
-logo
-
-global css
+global css - theme
 
 responsive
 

@@ -1,5 +1,7 @@
 import * as React from "react";
 
+import { useState } from "react";
+
 import {
   AppBar,
   Box,
@@ -7,183 +9,101 @@ import {
   IconButton,
   Typography,
   Menu,
-  Container,
   Avatar,
   Button,
-  Tooltip,
   MenuItem,
   Divider,
+  useMediaQuery,
 } from "@mui/material";
 
 import MenuIcon from "@mui/icons-material/Menu";
-import AdbIcon from "@mui/icons-material/Adb";
-
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { useDispatch, useSelector } from "react-redux";
 import { clearCurrentUser } from "@/slices/userSlice";
 import { RootState } from "@/types/types";
 
-interface Page {
-  label: string;
-  url: string;
-}
+import { useTheme } from "@mui/material/styles";
 
 interface Setting {
   label: string;
   url: string;
 }
 
-const pages: Page[] = [
-  { label: "Search trips", url: "/" },
-  { label: "Propose trips", url: "/trips/new" },
-];
 const settings: Setting[] = [
   { label: "Account", url: "account" },
-  { label: "My trips", url: "trips" },
-  { label: "My reviews", url: "reviews" },
+  { label: "Trips", url: "trips" },
+  { label: "Reviews", url: "reviews" },
 ];
 
 export default function Navbar() {
   const router = useRouter();
-
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const dispatch = useDispatch();
   const me = useSelector((state: RootState) => state.user.currentUser);
 
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
-    null
-  );
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
-    null
-  );
-
-  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElNav(event.currentTarget);
-  };
-  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
-
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleLogout = async () => {
     localStorage.removeItem("token");
     dispatch(clearCurrentUser());
     router.push("/login");
+    setAnchorEl(null);
+  };
+
+  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
   };
 
   return (
-    <AppBar>
-      <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="/"
+    <>
+      <AppBar>
+        <Toolbar>
+          <Box
+            onClick={() => router.push("/")}
             sx={{
-              mr: 2,
-              display: { xs: "none", md: "flex" },
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
+              display: "flex",
+              alignItems: "center",
+              cursor: "pointer",
+              "&:hover": {
+                opacity: 0.8,
+              },
             }}
           >
-            GoDrive
-          </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
-            <IconButton
-              size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleOpenNavMenu}
-              color="inherit"
-            >
-              <MenuIcon />
-            </IconButton>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "left",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "left",
-              }}
-              open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
-              sx={{
-                display: { xs: "block", md: "none" },
-              }}
-            >
-              {pages.map((page, index) => (
-                <MenuItem key={index} onClick={handleCloseNavMenu}>
-                  <Button
-                    onClick={() => router.push(`/${page.url}`)}
-                    sx={{ my: 2, color: "white", display: "block" }}
-                  >
-                    <Typography textAlign="center">{page.label}</Typography>
-                  </Button>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
-          <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href="/"
-            sx={{
-              mr: 2,
-              display: { xs: "flex", md: "none" },
-              flexGrow: 1,
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
-            }}
-          >
-            GoDrive
-          </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            {pages.map((page, index) => (
-              <Button
-                key={index}
-                onClick={() => router.push(`/${page.url}`)}
-                sx={{ my: 2, color: "white", display: "block" }}
-              >
-                <Typography textAlign="center">{page.label}</Typography>
-              </Button>
-            ))}
+            <Typography variant="h6" component="div">
+              <Box component="span" sx={{ color: "white" }}>
+                GO
+              </Box>
+              <Box component="span" sx={{ color: "#54F49A" }}>
+                DRIVE
+              </Box>
+            </Typography>
           </Box>
 
-          {me ? (
-            <Box sx={{ flexGrow: 0 }}>
-              <Tooltip title="Ouvrir les paramètres">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+          <Box sx={{ flexGrow: 1 }} />
+          {isMobile ? (
+            <Box>
+              <IconButton
+                size="large"
+                edge="start"
+                color="inherit"
+                aria-label="menu"
+                onClick={handleMenu}
+              >
+                {me ? (
                   <Avatar alt={me.email} src={me.pictureUrl} />
-                </IconButton>
-              </Tooltip>
+                ) : (
+                  <MenuIcon />
+                )}
+              </IconButton>
               <Menu
-                sx={{ mt: "45px" }}
                 id="menu-appbar"
-                anchorEl={anchorElUser}
+                anchorEl={anchorEl}
                 anchorOrigin={{
                   vertical: "top",
                   horizontal: "right",
@@ -193,39 +113,186 @@ export default function Navbar() {
                   vertical: "top",
                   horizontal: "right",
                 }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
               >
-                <Typography textAlign="center" sx={{ fontWeight: "bold" }}>
-                  Hello {me.email} !
-                </Typography>
-                <Divider />
-                {settings.map((setting, index) => (
+                {me && [
                   <MenuItem
-                    key={index}
-                    onClick={() => router.push(`/${setting.url}`)}
+                    key="hello"
+                    style={{ pointerEvents: "none" }}
+                    sx={{ fontWeight: "bold", textAlign: "center" }}
                   >
-                    <Typography textAlign="center">{setting.label}</Typography>
-                  </MenuItem>
-                ))}
-                <Divider />
-                <MenuItem onClick={handleLogout}>
-                  <Typography textAlign="center">Log out</Typography>
+                    Hello {me.email} !
+                  </MenuItem>,
+                  <Divider key="divider1" />,
+                ]}
+                <MenuItem
+                  onClick={() => {
+                    router.push("/");
+                    handleClose();
+                  }}
+                >
+                  Search Trips
                 </MenuItem>
+                {me && (
+                  <MenuItem
+                    onClick={() => {
+                      router.push("/trips/new");
+                      handleClose();
+                    }}
+                  >
+                    Propose Trip
+                  </MenuItem>
+                )}
+                <Divider />
+                {me
+                  ? [
+                      ...settings.map((setting, index) => (
+                        <MenuItem
+                          key={index}
+                          onClick={() => {
+                            router.push(`/${setting.url}`);
+                            handleClose();
+                          }}
+                        >
+                          <Typography sx={{ textAlign: "center" }}>
+                            {setting.label}
+                          </Typography>
+                        </MenuItem>
+                      )),
+                      <Divider key="divider2" />,
+                      <MenuItem key="logout" onClick={handleLogout}>
+                        Logout
+                      </MenuItem>,
+                    ]
+                  : [
+                      <MenuItem
+                        key="login"
+                        onClick={() => {
+                          router.push("/login");
+                          handleClose();
+                        }}
+                      >
+                        <Typography sx={{ textAlign: "center" }}>
+                          Login
+                        </Typography>
+                      </MenuItem>,
+                      <MenuItem
+                        key="register"
+                        onClick={() => {
+                          router.push("/register");
+                          handleClose();
+                        }}
+                      >
+                        <Typography sx={{ textAlign: "center" }}>
+                          Register
+                        </Typography>
+                      </MenuItem>,
+                    ]}
               </Menu>
             </Box>
           ) : (
             <Box>
-              <Link href="/login">
-                <Button variant="contained">Login</Button>
-              </Link>
-              <Link href="/register">
-                <Button variant="contained">Register</Button>
-              </Link>
+              {me ? (
+                <>
+                  <Button
+                    color="inherit"
+                    onClick={() => {
+                      router.push("/");
+                    }}
+                  >
+                    Search Trips
+                  </Button>
+                  <Button
+                    color="inherit"
+                    onClick={() => {
+                      router.push("/trips/new");
+                    }}
+                  >
+                    Propose Trip
+                  </Button>
+                  <IconButton
+                    size="large"
+                    aria-label="account of current user"
+                    aria-controls="menu-appbar"
+                    aria-haspopup="true"
+                    onClick={handleMenu}
+                    color="inherit"
+                  >
+                    <Avatar alt={me.email} src={me.pictureUrl} />
+                  </IconButton>
+                  <Menu
+                    id="menu-appbar"
+                    anchorEl={anchorEl}
+                    anchorOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                    keepMounted
+                    transformOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                    open={Boolean(anchorEl)}
+                    onClose={handleClose}
+                  >
+                    <MenuItem
+                      key="hello"
+                      style={{ pointerEvents: "none" }}
+                      sx={{ fontWeight: "bold", textAlign: "center" }}
+                    >
+                      Hello {me.email} !
+                    </MenuItem>
+                    <Divider />
+                    {settings.map((setting, index) => (
+                      <MenuItem
+                        key={index}
+                        onClick={() => {
+                          router.push(`/${setting.url}`);
+                          handleClose();
+                        }}
+                      >
+                        <Typography sx={{ textAlign: "center" }}>
+                          {setting.label}
+                        </Typography>
+                      </MenuItem>
+                    ))}
+                    <Divider />
+                    <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                  </Menu>
+                </>
+              ) : (
+                <>
+                  <Button
+                    color="inherit"
+                    onClick={() => {
+                      router.push("/");
+                    }}
+                  >
+                    Search Trips
+                  </Button>
+                  <Button
+                    color="inherit"
+                    onClick={() => {
+                      router.push("/login");
+                    }}
+                  >
+                    Login
+                  </Button>
+                  <Button
+                    color="inherit"
+                    onClick={() => {
+                      router.push("/register");
+                    }}
+                  >
+                    Register
+                  </Button>
+                </>
+              )}
             </Box>
           )}
         </Toolbar>
-      </Container>
-    </AppBar>
+      </AppBar>
+    </>
   );
 }
