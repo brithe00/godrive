@@ -1,5 +1,3 @@
-trip card finir
-
 global css - theme
 
 responsive

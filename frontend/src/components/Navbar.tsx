@@ -77,10 +77,10 @@ export default function Navbar() {
           >
             <Typography variant="h6" component="div">
               <Box component="span" sx={{ color: "white" }}>
-                GO
+                GOD
               </Box>
               <Box component="span" sx={{ color: "#54F49A" }}>
-                DRIVE
+                RIVE
               </Box>
             </Typography>
           </Box>

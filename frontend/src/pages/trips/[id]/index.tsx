@@ -126,7 +126,7 @@ export default function Trip() {
   };
 
   return (
-    <Container maxWidth="md">
+    <Container maxWidth="md" sx={{ marginTop: "-8rem" }}>
       {error && (
         <Alert style={{ marginBottom: "1rem" }} severity="error">
           Error : {error.message}
@@ -158,7 +158,7 @@ export default function Trip() {
               <List>
                 <ListItem>
                   <ListItemAvatar>
-                    <Avatar>
+                    <Avatar sx={{ bgcolor: "#1E90FF", color: "white" }}>
                       <AccessTime />
                     </Avatar>
                   </ListItemAvatar>
@@ -170,7 +170,7 @@ export default function Trip() {
 
                 <ListItem>
                   <ListItemAvatar>
-                    <Avatar>
+                    <Avatar sx={{ bgcolor: "#2ECC71", color: "white" }}>
                       <Timer />
                     </Avatar>
                   </ListItemAvatar>
@@ -182,7 +182,7 @@ export default function Trip() {
 
                 <ListItem>
                   <ListItemAvatar>
-                    <Avatar>
+                    <Avatar sx={{ bgcolor: "#FF6B35", color: "white" }}>
                       <Schedule />
                     </Avatar>
                   </ListItemAvatar>
@@ -194,7 +194,7 @@ export default function Trip() {
 
                 <ListItem>
                   <ListItemAvatar>
-                    <Avatar>
+                    <Avatar sx={{ bgcolor: "#8E44AD", color: "white" }}>
                       <DirectionsCar />
                     </Avatar>
                   </ListItemAvatar>
@@ -206,7 +206,7 @@ export default function Trip() {
 
                 <ListItem>
                   <ListItemAvatar>
-                    <Avatar>
+                    <Avatar sx={{ bgcolor: "#FF6B6B", color: "white" }}>
                       <AttachMoney />
                     </Avatar>
                   </ListItemAvatar>
@@ -215,7 +215,7 @@ export default function Trip() {
 
                 <ListItem>
                   <ListItemAvatar>
-                    <Avatar>
+                    <Avatar sx={{ bgcolor: "#40E0D0", color: "white" }}>
                       <Person />
                     </Avatar>
                   </ListItemAvatar>

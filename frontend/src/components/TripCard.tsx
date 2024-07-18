@@ -28,7 +28,9 @@ interface TripCardProps {
   isFull: boolean;
 }
 
-const StyledCard = styled(Card)<{ isFull: boolean }>(({ theme, isFull }) => ({
+const StyledCard = styled(Card, {
+  shouldForwardProp: (prop) => prop !== "isFull",
+})<{ isFull: boolean }>(({ theme, isFull }) => ({
   marginBottom: "1rem",
   transition: "all 0.3s ease",
   ...(isFull && {
