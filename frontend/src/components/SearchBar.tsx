@@ -114,7 +114,7 @@ export default function SearchBar() {
                       textField: {
                         fullWidth: true,
                       },
-                    }} // for ts
+                    }}
                     label="Date"
                     format="DD/MM/YYYY"
                     sx={{ width: "100%" }}
@@ -145,17 +145,25 @@ export default function SearchBar() {
             margin: "1rem 0",
           }}
         >
-          <Grid item xs={3.5}>
+          <Grid
+            item
+            xs={12}
+            md={3.5}
+            sx={{
+              margin: "0 0 1rem 0",
+            }}
+          >
             <TripsFilters
               sortBy={sortBy}
               onSortByChange={handleSortByChange}
               onResetFilters={handleResetFilters}
             />
           </Grid>
-          <Grid item xs={0.5}></Grid>
+
+          <Grid item xs={0} md={0.5}></Grid>
 
           {data && data.searchTrips.length === 0 && (
-            <Grid item xs={8}>
+            <Grid item xs={12} md={8}>
               <Card
                 sx={{
                   display: "flex",
@@ -170,7 +178,7 @@ export default function SearchBar() {
           )}
 
           {loading ? (
-            <Grid item xs={8}>
+            <Grid item xs={12} md={8}>
               <Card
                 sx={{
                   display: "flex",
@@ -185,7 +193,7 @@ export default function SearchBar() {
               </Card>
             </Grid>
           ) : (
-            <Grid item xs={8}>
+            <Grid item xs={12} md={8}>
               {data && <TripsList trips={data.searchTrips} />}
             </Grid>
           )}
