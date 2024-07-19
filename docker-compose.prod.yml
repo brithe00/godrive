@@ -3,8 +3,12 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile.prod
+    env_file: .env
     ports:
       - 4000:4000
+    depends_on:
+      db:
+        condition: service_healthy
 
   frontend:
     build:
@@ -14,6 +18,9 @@ services:
       - 3000:3000
     environment:
       - NEXT_PUBLIC_GRAPHQL_URL=/graphql
+    depends_on:
+      db:
+        condition: service_healthy
 
   images-upload:
     build:
@@ -23,13 +30,20 @@ services:
       - uploads_data:/app/uploads
     ports:
       - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
 
   db:
     image: postgres
-    environment:
-      POSTGRES_PASSWORD: example
+    env_file: .env
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis:
     image: redis
@@ -46,6 +60,7 @@ services:
       - frontend
       - backend
       - images-upload
+      - db
 
 volumes:
   pgdata:

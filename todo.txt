@@ -1,5 +1,3 @@
-env var datasource, db
-
 typescript
 
 redis
