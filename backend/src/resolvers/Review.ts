@@ -3,7 +3,7 @@ import { Review } from "../entities/review";
 import { UserContext } from "../types/User";
 import { User } from "../entities/user";
 import { checkIfRegistered } from "../utils/checker";
-import { redisClient } from "../index";
+//import { redisClient } from "../index";
 
 @Resolver()
 export class ReviewResolver {
