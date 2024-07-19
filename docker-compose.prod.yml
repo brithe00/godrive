@@ -1,8 +1,9 @@
 services:
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile.prod
+    #build:
+    #  context: ./backend
+    #  dockerfile: Dockerfile.prod
+    image: brithe00/server
     env_file: .env
     ports:
       - 4000:4000
@@ -11,9 +12,10 @@ services:
         condition: service_healthy
 
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile.prod
+    #build:
+    #  context: ./frontend
+    #  dockerfile: Dockerfile.prod
+    image: brithe00/client
     ports:
       - 3000:3000
     environment:
@@ -23,9 +25,10 @@ services:
         condition: service_healthy
 
   images-upload:
-    build:
-      context: ./images-upload
-      dockerfile: Dockerfile.prod
+    #build:
+    #  context: ./images-upload
+    #  dockerfile: Dockerfile.prod
+    image: brithe00/images-upload
     volumes:
       - uploads_data:/app/uploads
     ports:
