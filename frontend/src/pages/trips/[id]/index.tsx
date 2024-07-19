@@ -3,7 +3,7 @@ import { useState, useMemo } from "react";
 import { useParams } from "next/navigation";
 import { useSelector } from "react-redux";
 import { useQuery, useMutation } from "@apollo/client";
-import { GET_TRIP } from "@/graphql/queries/trip";
+import { GET_ALL_TRIPS_FOR_USER, GET_TRIP } from "@/graphql/queries/trip";
 import { ADD_PASSENGER, REMOVE_PASSENGER } from "@/graphql/mutations/trip";
 import Link from "next/link";
 
@@ -106,11 +106,17 @@ export default function Trip() {
       if (isUserOnTrip) {
         const { data } = await removePassenger({
           variables: { tripId: params?.id },
+          refetchQueries: [
+            { query: GET_ALL_TRIPS_FOR_USER, variables: { userId: me?.id } },
+          ],
         });
         setSnackbarMessage("You have left the trip.");
       } else {
         const { data } = await addPassenger({
           variables: { tripId: params?.id },
+          refetchQueries: [
+            { query: GET_ALL_TRIPS_FOR_USER, variables: { userId: me?.id } },
+          ],
         });
         setSnackbarMessage("You have joined the trip.");
       }

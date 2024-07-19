@@ -129,6 +129,13 @@ const TripsPage = () => {
                 | "all"
                 | "asDriver"
                 | "asPassenger"
+            ).length === 0 && <Typography>No trips.</Typography>}
+
+            {filterTrips(
+              ["all", "asDriver", "asPassenger"][tabValue] as
+                | "all"
+                | "asDriver"
+                | "asPassenger"
             ).map((trip) => (
               <TripCard key={trip.id} trip={trip} userId={userId} />
             ))}

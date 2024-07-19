@@ -140,7 +140,9 @@ const ReviewsPage = () => {
       )}
 
       {dataDeleteReview && dataDeleteReview.deleteReview && (
-        <Alert severity="success">Review successfully deleted.</Alert>
+        <Alert style={{ marginBottom: "1rem" }} severity="success">
+          Review successfully deleted.
+        </Alert>
       )}
 
       {loading && <CircularProgress />}
@@ -151,6 +153,10 @@ const ReviewsPage = () => {
             My Reviews
           </Typography>
           <List>
+            {data?.reviewsAsAuthor.length === 0 && (
+              <Typography>No reviews.</Typography>
+            )}
+
             {data?.reviewsAsAuthor.map((review) => (
               <ReviewCard
                 key={review.id}

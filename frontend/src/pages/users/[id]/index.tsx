@@ -29,16 +29,21 @@ import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import AddIcon from "@mui/icons-material/Add";
 
 import dayjs from "dayjs";
-import { GET_REVIEWS_BY_ID } from "@/graphql/queries/review";
+import {
+  GET_REVIEWS_AS_AUTHOR,
+  GET_REVIEWS_BY_ID,
+} from "@/graphql/queries/review";
 import { GET_TRIPS_FOR_USER } from "@/graphql/queries/trip";
 
 import { styled } from "@mui/system";
 import TripCardUser from "@/components/TripCardUser";
 import ReviewCardUser from "@/components/ReviewCardUser";
 import { CREATE_REVIEW } from "@/graphql/mutations/review";
-import { Review, Trip } from "@/types/types";
+import { Review, RootState, Trip } from "@/types/types";
 
 import Link from "next/link";
+
+import { useSelector } from "react-redux";
 
 const StyledLink = styled("a")({
   textDecoration: "none",
@@ -47,7 +52,7 @@ const StyledLink = styled("a")({
 
 export default function User() {
   const params = useParams();
-
+  const me = useSelector((state: RootState) => state.user.currentUser);
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [reviewTitle, setReviewTitle] = useState("");
   const [reviewComment, setReviewComment] = useState("");
@@ -120,6 +125,9 @@ export default function User() {
           rating: reviewRating,
           targetId: params?.id,
         },
+        refetchQueries: [
+          { query: GET_REVIEWS_AS_AUTHOR, variables: { userId: me?.id } },
+        ],
       });
 
       await refetchReviews();

@@ -1,6 +1,3 @@
-bug actualisation général : join trip, onglet trips non update
-créer une review, n'apparait pas => checker si elle apparait aussi dans reviews
-
 typescript
 
 tests
