@@ -3,7 +3,7 @@ services:
     #build:
     #  context: ./backend
     #  dockerfile: Dockerfile.prod
-    image: brithe00/server
+    image: brithe00/godrive-server
     env_file: .env
     ports:
       - 4000:4000
@@ -15,7 +15,7 @@ services:
     #build:
     #  context: ./frontend
     #  dockerfile: Dockerfile.prod
-    image: brithe00/client
+    image: brithe00/godrive-client
     ports:
       - 3000:3000
     environment:
@@ -28,7 +28,7 @@ services:
     #build:
     #  context: ./images-upload
     #  dockerfile: Dockerfile.prod
-    image: brithe00/images-upload
+    image: brithe00/godrive-images-upload
     volumes:
       - uploads_data:/app/uploads
     ports:
