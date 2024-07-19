@@ -19,6 +19,12 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
+      - name: 🐛 Debug image name
+        run: echo "Image name: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_SERVER_IMAGE_NAME }}"
+
+      - name: 🐛 Debug image name
+        run: echo "Image name: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_HUB_IMAGES_UPLOAD_IMAGE_NAME }}"
+
       - name: 🛠️ Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
