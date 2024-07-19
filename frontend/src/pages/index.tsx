@@ -50,9 +50,9 @@ function Hero() {
           </Box>
           <Box
             component="span"
-            sx={{ color: "white", textShadow: "2px 2px 4px rgba(0,0,0,0.5)" }}
+            sx={{ color: "red", textShadow: "2px 2px 4px rgba(0,0,0,0.5)" }}
           >
-            - STAGING
+            STAGING
           </Box>
         </Typography>
 
