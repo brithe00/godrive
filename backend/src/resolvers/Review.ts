@@ -16,30 +16,30 @@ export class ReviewResolver {
   async reviewsForUser(
     @Arg("userId", () => String) userId: string
   ): Promise<Review[]> {
-    const redisKey = `user:${userId}:reviews`;
+    //const redisKey = `user:${userId}:reviews`;
 
     try {
-      const cachedReviews = await redisClient.get(redisKey);
+      //const cachedReviews = await redisClient.get(redisKey);
 
-      if (cachedReviews !== null) {
-        return JSON.parse(cachedReviews);
-      } else {
-        const reviews = await Review.find({
-          where: {
-            target: {
-              id: userId,
-            },
+      //if (cachedReviews !== null) {
+      // return JSON.parse(cachedReviews);
+      // } else {
+      const reviews = await Review.find({
+        where: {
+          target: {
+            id: userId,
           },
-          relations: ["author", "target"],
-          order: {
-            createdAt: "DESC",
-          },
-        });
+        },
+        relations: ["author", "target"],
+        order: {
+          createdAt: "DESC",
+        },
+      });
 
-        await redisClient.set(redisKey, JSON.stringify(reviews), { EX: 3600 });
+      //  await redisClient.set(redisKey, JSON.stringify(reviews), { EX: 3600 });
 
-        return reviews;
-      }
+      return reviews;
+      // }
     } catch (error) {
       console.error("Erreur lors de la récupération des critiques :", error);
       throw new Error("Impossible de récupérer les critiques");
