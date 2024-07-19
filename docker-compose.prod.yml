@@ -40,6 +40,9 @@ services:
   db:
     image: postgres
     env_file: .env
+    environment:
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
