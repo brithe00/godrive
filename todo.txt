@@ -1,7 +1,7 @@
 typescript
 
-redis
-
 tests
 
 multi env cicd
+
+mobile ?
