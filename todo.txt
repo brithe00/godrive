@@ -1,6 +1,4 @@
-global css - theme
-
-responsive
+env var datasource, db
 
 typescript
 

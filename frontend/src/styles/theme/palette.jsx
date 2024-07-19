@@ -19,7 +19,7 @@ const GREY = {
 const PRIMARY = {
   lighter: "#a4adbf",
   light: "#606f8e",
-  main: "#181D31",
+  main: "#114360",
   dark: "#142242",
   darker: "#0b1426",
   contrastText: "#e8eaef",
@@ -82,7 +82,7 @@ const palette = {
   divider: alpha(GREY[500], 0.24),
   text: {
     primary: GREY[800],
-    secondary: "#181D31",
+    secondary: "#114360",
     disabled: GREY[500],
   },
   background: {

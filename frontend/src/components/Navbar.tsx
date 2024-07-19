@@ -128,7 +128,7 @@ export default function Navbar() {
                 ]}
                 <MenuItem
                   onClick={() => {
-                    router.push("/");
+                    router.push("/trips/search");
                     handleClose();
                   }}
                 >
@@ -198,7 +198,7 @@ export default function Navbar() {
                   <Button
                     color="inherit"
                     onClick={() => {
-                      router.push("/");
+                      router.push("/trips/search");
                     }}
                   >
                     Search Trips
@@ -266,7 +266,7 @@ export default function Navbar() {
                   <Button
                     color="inherit"
                     onClick={() => {
-                      router.push("/");
+                      router.push("/trips/search");
                     }}
                   >
                     Search Trips

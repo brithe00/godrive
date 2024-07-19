@@ -15,7 +15,7 @@ export default function Copyright(props: CopyrightProps) {
     >
       {"Copyright © "}
       <Link color="inherit" href="/">
-        GoDrive
+        Godrive
       </Link>{" "}
       {new Date().getFullYear()}
       {"."}
