@@ -19,6 +19,13 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
+      - name: 🔒 Create private Docker Hub repository for client
+        run: |
+          curl -X POST https://hub.docker.com/v2/repositories/${{ secrets.DOCKER_HUB_REPOSITORY }}/${{ secrets.DOCKER_HUB_CLIENT_IMAGE_NAME }}/ \
+          -H "Authorization: JWT ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" \
+          -H "Content-Type: application/json" \
+          --data '{"namespace":"${{ secrets.DOCKER_HUB_REPOSITORY }}", "name":"${{ secrets.DOCKER_HUB_CLIENT_IMAGE_NAME }}", "is_private": true}'
+
       - name: 🛠️ Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
