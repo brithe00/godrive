@@ -1,3 +1,5 @@
+pas de refresh quand créer trip sur search
+
 typescript
 
 tests
