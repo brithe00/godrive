@@ -1,160 +1,101 @@
-import { buildSchemaSync } from 'type-graphql';
-import { UserAdminResolver } from '../src/resolvers/UserAdmin';
-import { UserResolver } from '../src/resolvers/User';
-import { ApolloServer } from '@apollo/server';
-import { User } from '../src/entities/user';
-import { addMocksToSchema } from '@graphql-tools/mock';
-import assert from 'assert';
+import "reflect-metadata";
+import { UserResolver } from "../src/resolvers/User";
+import { User } from "../src/entities/user";
 
-export const LIST_USERS = `#graphql
-  query Users {
-    users {
-      id
-      email
-      firstname
-      lastname
-      description
-      pictureUrl
-      phoneNumber
-      isAdmin
-    }
-  }
-`;
+// Mock TypeGraphQL decorators and functions
+jest.mock("type-graphql", () => ({
+  Resolver: () => jest.fn(),
+  Query: () => jest.fn(),
+  Mutation: () => jest.fn(),
+  Arg: () => jest.fn(),
+  Ctx: () => jest.fn(),
+  Field: () => jest.fn(),
+  ObjectType: () => jest.fn(),
+  InputType: () => jest.fn(),
+  Int: jest.fn(),
+  Float: jest.fn(),
+  ID: jest.fn(),
+}));
 
-export const LIST_USERS_WITH_ID = `#graphql
-  query Users {
-    users {
-      id
-    }
-  }
-`;
+// Mock TypeORM decorators and functions
+jest.mock("typeorm", () => ({
+  JoinTable: () => jest.fn(),
+  Entity: () => jest.fn(),
+  PrimaryGeneratedColumn: () => jest.fn(),
+  Column: () => jest.fn(),
+  CreateDateColumn: () => jest.fn(),
+  UpdateDateColumn: () => jest.fn(),
+  OneToMany: () => jest.fn(),
+  ManyToMany: () => jest.fn(),
+  ManyToOne: () => jest.fn(),
+  BaseEntity: class {
+    static find = jest.fn();
+    static findOne = jest.fn();
+  },
+}));
 
-export const GET_USER_BY_ID = `#graphql
-	query GetUser($getUserByIdId: Float!) {
-		getUserById(id: $getUserByIdId) {
-			id
-			email
-			firstname
-      lastname
-      description
-      pictureUrl
-      phoneNumber
-      isAdmin
-		}
-	}
-`;
+jest.mock("../src/entities/trip", () => ({
+  Trip: jest.fn(),
+}));
 
-type ResponseData = {
-	users: User[];
-};
+describe("User Resolvers", () => {
+  let userResolver: UserResolver;
 
-type ResponseOneUserData = {
-	getUserById: User;
-};
+  const mockUsers: Partial<User>[] = [
+    {
+      id: "1",
+      email: "brian@example.com",
+      firstname: "Brian",
+      lastname: "Thellier",
+      description: "Ceci est une description",
+      pictureUrl: "http://",
+      phoneNumber: "0600000000",
+      isAdmin: true,
+    },
+    {
+      id: "2",
+      email: "pasbrian@example.com",
+      firstname: "pasBrian",
+      lastname: "pasThellier",
+      description: "pasCeci est une description",
+      pictureUrl: "pashttp://",
+      phoneNumber: "pas0600000000",
+      isAdmin: true,
+    },
+  ];
 
-const usersData: Partial<User>[] = [
-	{
-		id: 1,
-		email: 'brian@example.com',
-		firstname: 'Brian',
-		lastname: 'Thellier',
-		description: 'Ceci est une description',
-		pictureUrl: 'http://',
-		phoneNumber: '0600000000',
-		isAdmin: true,
-	},
-	{
-		id: 2,
-		email: 'pasbrian@example.com',
-		firstname: 'pasBrian',
-		lastname: 'pasThellier',
-		description: 'pasCeci est une description',
-		pictureUrl: 'pashttp://',
-		phoneNumber: 'pas0600000000',
-		isAdmin: true,
-	},
-];
+  beforeEach(() => {
+    jest.clearAllMocks();
+    userResolver = new UserResolver();
+  });
 
-let server: ApolloServer;
+  describe("UserResolver", () => {
+    describe("getUserById", () => {
+      it("should return a user by id", async () => {
+        const userId = "1";
+        (User.findOne as jest.Mock).mockResolvedValue(mockUsers[0]);
 
-const baseSchema = buildSchemaSync({
-	resolvers: [UserAdminResolver, UserResolver],
-});
+        const result = await userResolver.getUserById(userId);
 
-beforeAll(async () => {
-	const mocks = {
-		Query: {
-			users() {
-				return usersData;
-			},
-		},
-	};
+        expect(result).toEqual(mockUsers[0]);
+        expect(User.findOne).toHaveBeenCalledWith({
+          where: { id: userId },
+          relations: ["reviewsAsTarget.target", "tripsAsDriver.driver"],
+        });
+      });
 
-	const resolvers = () => ({
-		Query: {
-			getUserById(_: any, args: { id: number }) {
-				return usersData.find((b) => b.id == args.id);
-			},
-		},
-	});
+      it("should throw an error if user is not found", async () => {
+        const userId = "999";
+        (User.findOne as jest.Mock).mockResolvedValue(null);
 
-	server = new ApolloServer({
-		schema: addMocksToSchema({
-			schema: baseSchema,
-			mocks,
-			resolvers: resolvers as unknown as ReturnType<typeof resolvers> &
-				typeof mocks,
-		}),
-	});
-});
-
-describe('🍕 - 1. Test sur les utilisateurs', () => {
-	it("Retourner une liste d'utilisateurs", async () => {
-		// const mockUser = {
-		// 	id: 1,
-		// 	email: 'test@test.com',
-		// 	isAdmin: true,
-		// };
-
-		const response = await server.executeOperation<ResponseData>(
-			{
-				query: LIST_USERS,
-			}
-			// {
-			// 	contextValue: { user: mockUser },
-			// }
-		);
-
-		assert(response.body.kind === 'single');
-		expect(response.body.singleResult.data).toEqual({
-			users: usersData,
-		});
-	});
-
-	it('Retourner les ids des utilisateurs', async () => {
-		const response = await server.executeOperation<ResponseData>({
-			query: LIST_USERS_WITH_ID,
-		});
-
-		assert(response.body.kind === 'single');
-		expect(response.body.singleResult.data).toEqual({
-			users: usersData.map((user) => ({ id: user.id })),
-		});
-	});
-
-	it("Récupération d'un utilisateur à partir de son id", async () => {
-		const response = await server.executeOperation<ResponseOneUserData>({
-			query: GET_USER_BY_ID,
-			variables: {
-				getUserByIdId: 1,
-			},
-		});
-
-		// console.log('RESPONSE', JSON.stringify(response));
-
-		assert(response.body.kind === 'single');
-		expect(response.body.singleResult.data).toEqual({
-			getUserById: usersData[0],
-		});
-	});
+        await expect(userResolver.getUserById(userId)).rejects.toThrow(
+          "Failed to fetch user: User not found !"
+        );
+        expect(User.findOne).toHaveBeenCalledWith({
+          where: { id: userId },
+          relations: ["reviewsAsTarget.target", "tripsAsDriver.driver"],
+        });
+      });
+    });
+  });
 });
