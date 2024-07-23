@@ -48,13 +48,6 @@ function Hero() {
           >
             RIVE
           </Box>
-          <Box
-            component="span"
-            sx={{ color: "blue", textShadow: "2px 2px 4px rgba(0,0,0,0.5)" }}
-          >
-            {" "}
-            STAGING
-          </Box>
         </Typography>
 
         <Box
