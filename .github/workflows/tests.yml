@@ -7,15 +7,15 @@ jobs:
   test-backend:
     name: 🚀 Run Backend Tests
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
     steps:
       - name: 📥 Check out code
         uses: actions/checkout@v2
 
-      - name: 📂 Navigate to backend
-        run: cd backend
-
       - name: 📦 Install dependencies
-        run: npm i
+        run: npm ci
 
       - name: 🧪 Run tests
         run: npm run test
