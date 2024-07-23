@@ -1,8 +1,8 @@
 name: 🏗️ Compile and push client image
 
 on:
-  push:
-    branches: ["staging"]
+  #push:
+  #branches: ["staging"]
   workflow_dispatch:
 
 jobs:

@@ -1,8 +1,8 @@
 name: 🏗️ Compile and push server images
 
 on:
-  push:
-    branches: ["staging"]
+  #push:
+  #branches: ["staging"]
   workflow_dispatch:
 
 jobs:
