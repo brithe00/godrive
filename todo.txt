@@ -1,11 +1,3 @@
-pas de refresh quand créer trip sur search
-
 typescript
-
-tests
-
-multi env cicd
-
-mobile ?
 
 + cache commented

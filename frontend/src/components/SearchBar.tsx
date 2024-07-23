@@ -49,6 +49,7 @@ export default function SearchBar() {
         date: date ? dayjs(date).utc().format() : null,
         sortBy,
       },
+      fetchPolicy: "network-only",
     });
 
   const handleSortByChange = (value: SortBy) => {
