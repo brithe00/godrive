@@ -1,8 +1,4 @@
-responsive
-
-margin
-
-migrations & plan
+plan
 
 typescript
 
