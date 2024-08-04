@@ -48,7 +48,7 @@ export class Trip extends BaseEntity {
   endLocation: string;
 
   @Field()
-  @Column()
+  @Column({ nullable: true })
   vehicleType: string; // e.g., "SUV"
 
   @Field()
