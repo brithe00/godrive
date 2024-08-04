@@ -13,7 +13,6 @@ function Hero() {
       sx={{
         position: "relative",
         width: "100%",
-        marginTop: "-13rem",
       }}
     >
       <Box sx={{ position: "relative", width: "100%", paddingTop: "40%" }}>

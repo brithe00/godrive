@@ -67,7 +67,7 @@ export default function SearchBar() {
 
   return (
     <>
-      <Container component="main" sx={{ marginTop: "-8rem" }}>
+      <Container component="main">
         {error && (
           <Alert
             severity="error"

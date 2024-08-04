@@ -45,6 +45,16 @@ import Link from "next/link";
 
 import { useSelector } from "react-redux";
 
+const StyledCard = styled(Card)(({ theme }) => ({
+  boxShadow: "0 0 0 1px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.1)",
+  borderRadius: "8px",
+  transition: "box-shadow 0.3s ease-in-out",
+  "&:hover": {
+    boxShadow: "0 0 0 1px rgba(0, 0, 0, 0.05), 0 4px 8px rgba(0, 0, 0, 0.15)",
+  },
+  overflow: "visible",
+}));
+
 const StyledLink = styled("a")({
   textDecoration: "none",
   color: "inherit",
@@ -143,7 +153,7 @@ export default function User() {
 
   return (
     <>
-      <Container component="main" maxWidth="md" sx={{ marginTop: "-8rem" }}>
+      <Container component="main" maxWidth="md">
         {errorCreatedReview && (
           <Alert style={{ marginBottom: "1rem" }} severity="error">
             Error : {errorCreatedReview.message}
@@ -240,14 +250,16 @@ export default function User() {
 
                       <Grid container spacing={2} mt={0.5}>
                         {trips?.map((trip: Trip) => (
-                          <Grid item xs={3} key={trip.id}>
+                          <Grid item xs={6} md={3} key={trip.id}>
                             <Link
                               href={`/trips/${trip.id}`}
                               passHref
                               legacyBehavior
                             >
                               <StyledLink>
-                                <TripCardUser trip={trip} />
+                                <StyledCard>
+                                  <TripCardUser trip={trip} />
+                                </StyledCard>
                               </StyledLink>
                             </Link>
                           </Grid>
@@ -294,7 +306,9 @@ export default function User() {
                               legacyBehavior
                             >
                               <StyledLink>
-                                <ReviewCardUser review={review} />
+                                <StyledCard>
+                                  <ReviewCardUser review={review} />
+                                </StyledCard>
                               </StyledLink>
                             </Link>
                           </Grid>
