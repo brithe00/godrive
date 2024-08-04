@@ -49,7 +49,7 @@ function Hero() {
           </Box>
           <Box
             component="span"
-            sx={{ color: "orange", textShadow: "2px 2px 4px rgba(0,0,0,0.5)" }}
+            sx={{ color: "purple", textShadow: "2px 2px 4px rgba(0,0,0,0.5)" }}
           >
             {" "}
             STAGING
