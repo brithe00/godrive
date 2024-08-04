@@ -240,7 +240,7 @@ export default function Account() {
 
   return (
     <>
-      <Container component="main" maxWidth="md" sx={{ marginTop: "-8rem" }}>
+      <Container component="main" maxWidth="md">
         <Card>
           <CardContent>
             <Box sx={{ display: "flex", justifyContent: "space-between" }}>

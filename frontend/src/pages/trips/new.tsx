@@ -186,7 +186,7 @@ export default function NewTrip() {
 
   return (
     <>
-      <Container component="main" maxWidth="md" sx={{ marginTop: "-8rem" }}>
+      <Container component="main" maxWidth="md">
         {error && (
           <Alert style={{ marginBottom: "1rem" }} severity="error">
             Error : {error.message}

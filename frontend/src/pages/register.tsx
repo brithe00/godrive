@@ -101,7 +101,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <Container component="main" maxWidth="xs" sx={{ marginTop: "-8rem" }}>
+    <Container component="main" maxWidth="xs">
       <CssBaseline />
       <Box
         sx={{

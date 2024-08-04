@@ -1,5 +1,6 @@
 import Head from "next/head";
 import { ReactNode } from "react";
+import { Box } from "@mui/material";
 import Navbar from "./Navbar";
 
 interface LayoutProps {
@@ -15,20 +16,20 @@ export default function Layout({ children }: LayoutProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexDirection: "column",
-            margin: "20vh 0",
-          }}
-        >
-          <Navbar />
-          {children}
-        </div>
-      </main>
+      <Navbar />
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          pt: {
+            xs: 10, // 16px on extra-small screens
+            sm: 10, // 32px on small screens
+            md: 12, // 48px on medium screens and up
+          },
+        }}
+      >
+        {children}
+      </Box>
     </>
   );
 }

@@ -126,7 +126,7 @@ const ReviewsPage = () => {
   };
 
   return (
-    <Container maxWidth="md" sx={{ marginTop: "-8rem" }}>
+    <Container maxWidth="md">
       {error && (
         <Alert style={{ marginBottom: "1rem" }} severity="error">
           Error : {error.message}
