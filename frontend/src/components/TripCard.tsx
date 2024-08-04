@@ -7,6 +7,8 @@ import {
   Chip,
   Avatar,
   Button,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
@@ -56,6 +58,10 @@ const StyledCard = styled(Card, {
 }));
 
 export default function TripCard({ trip, isFull }: TripCardProps) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.down("md"));
+
   return (
     <StyledCard isFull={isFull} sx={{ marginBottom: "1rem" }}>
       <CardContent>

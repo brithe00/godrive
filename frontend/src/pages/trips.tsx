@@ -7,16 +7,15 @@ import {
   Tabs,
   Tab,
   List,
-  ListItem,
-  ListItemText,
-  ListItemAvatar,
-  Avatar,
+  Box,
   Chip,
   CircularProgress,
   Card,
   CardContent,
   Alert,
   CardActionArea,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import DriveEtaIcon from "@mui/icons-material/DriveEta";
 import PersonIcon from "@mui/icons-material/Person";
@@ -29,51 +28,86 @@ interface TripCardProps {
   userId: string | undefined;
 }
 
-const TripCard: React.FC<TripCardProps> = ({ trip, userId }) => (
-  <Card sx={{ width: "100%", mb: 2 }}>
-    <CardActionArea component={Link} href={`/trips/${trip.id}`}>
-      <CardContent sx={{ display: "flex", alignItems: "center" }}>
-        <ListItem key={trip.id} alignItems="flex-start">
-          <ListItemAvatar>
-            <Avatar
-              alt={`${trip?.driver?.firstname} ${trip?.driver?.lastname}`}
-              src={trip?.driver?.pictureUrl}
-            />
-          </ListItemAvatar>
-          <ListItemText
-            primary={`${trip.startLocation} to ${trip.endLocation}`}
-            secondary={
-              <>
-                <Typography
-                  component="span"
-                  variant="body2"
-                  color="textPrimary"
-                >
+const TripCard: React.FC<TripCardProps> = ({ trip, userId }) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  return (
+    <Card
+      sx={{
+        width: "100%",
+        mb: 3,
+        boxShadow:
+          "0 0 0 1px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.1)",
+        transition: "box-shadow 0.3s ease-in-out",
+        "&:hover": {
+          boxShadow:
+            "0 0 0 1px rgba(0, 0, 0, 0.05), 0 4px 8px rgba(0, 0, 0, 0.15)",
+        },
+        borderRadius: "8px",
+        overflow: "visible",
+      }}
+    >
+      <CardActionArea component={Link} href={`/trips/${trip.id}`}>
+        <CardContent sx={{ p: 3 }}>
+          <Box sx={{ display: "flex", flexDirection: "column" }}>
+            <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+              <Box
+                component="img"
+                src={trip?.driver?.pictureUrl}
+                alt={`${trip?.driver?.firstname} ${trip?.driver?.lastname}`}
+                sx={{ width: 50, height: 50, borderRadius: "50%", mr: 2 }}
+              />
+              <Box sx={{ flexGrow: 1 }}>
+                <Typography variant="subtitle1">{`${trip.startLocation} to ${trip.endLocation}`}</Typography>
+                <Typography variant="body2" color="text.secondary">
                   {`${new Date(trip.date).toLocaleDateString()} | ${
                     trip.startTime
                   } - ${trip.endTime}`}
                 </Typography>
-                <br />
+              </Box>
+              <Box sx={{ ml: 2 }}>
+                <Chip
+                  icon={
+                    trip?.driver?.id === userId ? (
+                      <DriveEtaIcon />
+                    ) : (
+                      <PersonIcon />
+                    )
+                  }
+                  label={trip?.driver?.id === userId ? "Driver" : "Passenger"}
+                  color={trip?.driver?.id === userId ? "primary" : "secondary"}
+                  size={isMobile ? "small" : "medium"}
+                />
+              </Box>
+            </Box>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: isMobile ? "column" : "row",
+                justifyContent: "space-between",
+                alignItems: isMobile ? "flex-start" : "center",
+                pt: 2,
+                borderTop: `1px solid ${theme.palette.divider}`,
+              }}
+            >
+              <Typography variant="body2" sx={{ mb: isMobile ? 1 : 0 }}>
                 {`Driver: ${trip?.driver?.firstname} ${trip?.driver?.lastname}`}
-                <br />
+              </Typography>
+              <Typography variant="body2">
                 {`Price: $${trip.price} | Duration: ${trip.estimatedDuration}min`}
-              </>
-            }
-          />
-          <Chip
-            icon={
-              trip?.driver?.id === userId ? <DriveEtaIcon /> : <PersonIcon />
-            }
-            label={trip?.driver?.id === userId ? "Driver" : "Passenger"}
-            color={trip?.driver?.id === userId ? "primary" : "secondary"}
-          />
-        </ListItem>
-      </CardContent>
-    </CardActionArea>
-  </Card>
-);
+              </Typography>
+            </Box>
+          </Box>
+        </CardContent>
+      </CardActionArea>
+    </Card>
+  );
+};
 
 const TripsPage = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const me = useSelector((state: RootState) => state.user.currentUser);
   const [tabValue, setTabValue] = useState(0);
   const userId = me?.id;
@@ -104,42 +138,67 @@ const TripsPage = () => {
   };
 
   return (
-    <Container component="main" maxWidth="md">
+    <Container
+      component="main"
+      maxWidth="md"
+      sx={{ py: { xs: 2, sm: 3, md: 4 } }}
+    >
       {error && (
-        <Alert style={{ marginBottom: "1rem" }} severity="error">
-          Error : {error.message}
+        <Alert severity="error" sx={{ mb: 2 }}>
+          Error: {error.message}
         </Alert>
       )}
 
-      {loading && <CircularProgress />}
-
-      <Card>
-        <CardContent>
-          <Typography variant="h4" gutterBottom>
+      <Card
+        sx={{
+          boxShadow:
+            "0 0 0 1px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.1)",
+          borderRadius: "8px",
+          overflow: "visible",
+        }}
+      >
+        <CardContent sx={{ p: 3 }}>
+          <Typography variant="h4" gutterBottom sx={{ mb: 3 }}>
             My Trips
           </Typography>
-          <Tabs value={tabValue} onChange={handleTabChange} centered>
+          <Tabs
+            value={tabValue}
+            onChange={handleTabChange}
+            centered
+            variant={isMobile ? "fullWidth" : "standard"}
+            sx={{ mb: 2 }}
+          >
             <Tab label="All Trips" />
             <Tab label="As Driver" />
             <Tab label="As Passenger" />
           </Tabs>
-          <List>
-            {filterTrips(
-              ["all", "asDriver", "asPassenger"][tabValue] as
-                | "all"
-                | "asDriver"
-                | "asPassenger"
-            ).length === 0 && <Typography>No trips.</Typography>}
-
-            {filterTrips(
-              ["all", "asDriver", "asPassenger"][tabValue] as
-                | "all"
-                | "asDriver"
-                | "asPassenger"
-            ).map((trip) => (
-              <TripCard key={trip.id} trip={trip} userId={userId} />
-            ))}
-          </List>
+          {loading ? (
+            <Box sx={{ display: "flex", justifyContent: "center", my: 4 }}>
+              <CircularProgress />
+            </Box>
+          ) : (
+            <List sx={{ p: 0 }}>
+              {filterTrips(
+                ["all", "asDriver", "asPassenger"][tabValue] as
+                  | "all"
+                  | "asDriver"
+                  | "asPassenger"
+              ).length === 0 ? (
+                <Typography sx={{ textAlign: "center", my: 2 }}>
+                  No trips found.
+                </Typography>
+              ) : (
+                filterTrips(
+                  ["all", "asDriver", "asPassenger"][tabValue] as
+                    | "all"
+                    | "asDriver"
+                    | "asPassenger"
+                ).map((trip) => (
+                  <TripCard key={trip.id} trip={trip} userId={userId} />
+                ))
+              )}
+            </List>
+          )}
         </CardContent>
       </Card>
     </Container>
