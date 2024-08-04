@@ -1,3 +1,9 @@
+responsive
+
+margin
+
+migrations & plan
+
 typescript
 
 + cache commented
